@@ -1,0 +1,11 @@
+[package]
+name = "mdl-sys"
+version = "0.1.0"
+authors = ["Anders Langlands <anderslanglands@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+
+[build-dependencies]
+cmake = "0.1"
+config="0.9"

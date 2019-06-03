@@ -1,0 +1,6 @@
+[workspace]
+
+members = [
+    "mdl-sys",
+    "mdl"
+]
