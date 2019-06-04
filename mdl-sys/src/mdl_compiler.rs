@@ -11,6 +11,7 @@ pub enum MdlBackendKind {
 }
 
 extern "C" {
+    pub fn IMdl_compiler_release(c: IMdlCompiler);
     pub fn IMdl_compiler_add_module_path(c: IMdlCompiler, path: *const c_char) -> AddPathResult;
     pub fn IMdl_compiler_remove_module_path(c: IMdlCompiler, path: *const c_char) -> AddPathResult;
     pub fn IMdl_compiler_clear_module_paths(c: IMdlCompiler);
@@ -27,6 +28,7 @@ pub struct IMdlBackend_api {
 pub type IMdlBackend = *mut IMdlBackend_api;
 
 extern "C" {
+    pub fn IMdl_backend_release(be: IMdlBackend);
     pub fn IMdl_backend_set_option(
         be: IMdlBackend,
         name: *const c_char,

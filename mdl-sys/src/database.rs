@@ -1,12 +1,7 @@
 use crate::components::*;
-
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct IScope_api {
-    _unused: [u8; 0],
-}
-pub type IScope = *mut IScope_api;
+use crate::scope::IScope;
 
 extern "C" {
+    pub fn IDatabase_release(db: IDatabase);
     pub fn IDatabase_get_global_scope(db: IDatabase) -> IScope;
 }

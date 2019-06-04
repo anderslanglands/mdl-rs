@@ -12,6 +12,14 @@ pub mod mdl_factory;
 pub use mdl_factory::*;
 pub mod mdl_execution_context;
 pub use mdl_execution_context::*;
+pub mod image_api;
+pub use image_api::*;
+pub mod scope;
+pub use scope::*;
+pub mod base;
+pub use base::*;
+pub mod version;
+pub use version::*;
 
 #[test]
 fn test_load_ineuray() {
@@ -137,7 +145,15 @@ fn test_load_ineuray() {
         let image_api = ineuray_get_api_component_image_api(n);
         assert!(!image_api.is_null());
 
-        // shutdown neuray
+        // release everything and shutdown neuray
+        IImage_api_release(image_api);
+        IMdl_backend_release(cuda_be);
+        IMdl_execution_context_release(mdl_execution_context);
+        IMdl_factory_release(mdl_factory);
+        IScope_release(global_scope);
+        IDatabase_release(database);
+        IMdl_compiler_release(mdl_compiler);
+
         assert_eq!(ineuray_shutdown(n), INeurayShutdownResult::Success);
     }
 }

@@ -6,6 +6,9 @@ typedef mi::neuraylib::IMdl_compiler::Mdl_backend_kind Mdl_backend_kind;
 typedef mi::neuraylib::IMdl_backend IMdl_backend;
 
 extern "C" {
+
+void IMdl_compiler_release(IMdl_compiler* c) { c->release(); }
+
 i32 IMdl_compiler_add_module_path(IMdl_compiler* c, const char* path) {
     return c->add_module_path(path);
 }
@@ -29,6 +32,7 @@ IMdl_backend* IMdl_compiler_get_backend(IMdl_compiler* c,
 }
 
 extern "C" {
+void IMdl_backend_release(IMdl_backend* be) { be->release(); }
 i32 IMdl_backend_set_option(IMdl_backend* be, const char* name,
                             const char* value) {
     return be->set_option(name, value);

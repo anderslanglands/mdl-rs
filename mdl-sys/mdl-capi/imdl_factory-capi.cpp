@@ -5,6 +5,7 @@ typedef mi::neuraylib::IMdl_factory IMdl_factory;
 typedef mi::neuraylib::IMdl_execution_context IMdl_execution_context;
 
 extern "C" {
+void IMdl_factory_release(IMdl_factory* f) { f->release(); }
 IMdl_execution_context* IMdl_factory_create_execution_context(IMdl_factory* f) {
     return f->create_execution_context();
 }

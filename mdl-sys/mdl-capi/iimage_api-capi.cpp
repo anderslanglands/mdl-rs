@@ -3,4 +3,6 @@
 
 typedef mi::neuraylib::IImage_api IImage_api;
 
-extern "C" {}
+extern "C" {
+void IImage_api_release(IImage_api* i) { i->release(); }
+}

@@ -12,6 +12,8 @@ add_library(mdl-capi STATIC
     imdl_factory-capi.cpp
     imdl_execution_context-capi.cpp
     iimage_api-capi.cpp
+    iscope-capi.cpp
+    iversion-capi.cpp
     )
 target_include_directories(mdl-capi PUBLIC ${INC_MDL})
 # target_link_libraries(mdl-capi PUBLIC)
