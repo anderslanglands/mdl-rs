@@ -48,3 +48,13 @@ pub enum BackendSetOptionResult {
     UnknownOption = -1,
     UnsupportedValue = -2,
 }
+
+#[repr(i32)]
+#[derive(Debug, Copy, Clone, PartialEq)]
+pub enum LoadModuleResult {
+    Success = 0,
+    ModuleNameInvalid = -1,
+    FailedToLoadModule = -2,
+    NameAlreadyInUse = -3,
+    InitializationFailed = -4,
+}

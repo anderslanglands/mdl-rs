@@ -5,6 +5,7 @@ typedef mi::neuraylib::IMdl_execution_context IMdl_execution_context;
 
 extern "C" {
 void IMdl_execution_context_release(IMdl_execution_context* c) { c->release(); }
+void IMdl_execution_context_retain(IMdl_execution_context* c) { c->retain(); }
 
 i32 IMdl_execution_context_set_option_string(IMdl_execution_context* c,
                                              const char* name,

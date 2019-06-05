@@ -10,6 +10,7 @@ pub type IMdlExecutionContext = *mut IMdlExecutionContext_api;
 
 extern "C" {
     pub fn IMdl_execution_context_release(c: IMdlExecutionContext);
+    pub fn IMdl_execution_context_retain(c: IMdlExecutionContext);
     pub fn IMdl_execution_context_set_option_string(
         c: IMdlExecutionContext,
         name: *const c_char,

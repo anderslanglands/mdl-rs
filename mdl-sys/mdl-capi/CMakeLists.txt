@@ -14,6 +14,14 @@ add_library(mdl-capi STATIC
     iimage_api-capi.cpp
     iscope-capi.cpp
     iversion-capi.cpp
+    itransaction-capi.cpp
+    ifunction_definition-capi.cpp
+    imaterial_definition-capi.cpp
+    imodule-capi.cpp
+    iinterface-capi.cpp
+    itype_list-capi.cpp
+    itype-capi.cpp
+    ivalue-capi.cpp
     )
 target_include_directories(mdl-capi PUBLIC ${INC_MDL})
 # target_link_libraries(mdl-capi PUBLIC)

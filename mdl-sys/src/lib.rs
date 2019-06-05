@@ -20,6 +20,22 @@ pub mod base;
 pub use base::*;
 pub mod version;
 pub use version::*;
+pub mod transaction;
+pub use transaction::*;
+pub mod function_definition;
+pub use function_definition::*;
+pub mod material_definition;
+pub use material_definition::*;
+pub mod module;
+pub use module::*;
+pub mod interface;
+pub use interface::*;
+pub mod type_list;
+pub use type_list::*;
+pub mod itype;
+pub use itype::*;
+pub mod value;
+pub use value::*;
 
 #[test]
 fn test_load_ineuray() {

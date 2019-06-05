@@ -5,6 +5,12 @@ pub struct Version {
     pub(crate) v: sys::IVersion,
 }
 
+impl Drop for Version {
+    fn drop(&mut self) {
+        unsafe { sys::IVersion_release(self.v) };
+    }
+}
+
 impl Version {
     pub fn get_product_name(&self) -> String {
         unsafe {

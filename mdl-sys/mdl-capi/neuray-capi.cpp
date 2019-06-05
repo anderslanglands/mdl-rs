@@ -16,6 +16,8 @@ typedef mi::neuraylib::IMdl_evaluator_api IMdl_evaluator_api;
 typedef mi::neuraylib::IMdl_factory IMdl_factory;
 typedef mi::neuraylib::IMdle_api IMdle_api;
 typedef mi::neuraylib::IVersion IVersion;
+typedef mi::base::IInterface IInterface;
+typedef mi::base::Uuid Uuid;
 
 extern "C" {
 INeuray* load_ineuray() { return load_and_get_ineuray(); }
@@ -28,6 +30,10 @@ const char* ineuray_get_version(INeuray* n) { return n->get_version(); }
 
 i32 ineuray_start(INeuray* n) { return n->start(); }
 i32 ineuray_shutdown(INeuray* n) { return n->shutdown(); }
+
+IInterface* ineuray_get_api_component(INeuray* n, Uuid iid) {
+    return n->get_api_component(iid);
+}
 
 IDatabase* ineuray_get_api_component_database(INeuray* n) {
     return n->get_api_component<IDatabase>();

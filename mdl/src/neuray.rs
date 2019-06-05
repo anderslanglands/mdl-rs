@@ -1,8 +1,8 @@
 use mdl_sys as sys;
 
-use crate::Version;
+use crate::{Database, MdlCompiler, MdlFactory, Version};
 
-use snafu::{ensure, Snafu};
+use err_derive::Error;
 
 pub struct Neuray {
     n: sys::INeuray,
@@ -13,8 +13,11 @@ type Result<T, E = Error> = std::result::Result<T, E>;
 impl Neuray {
     pub fn new() -> Result<Neuray> {
         let n = unsafe { sys::load_ineuray() };
-        ensure!(!n.is_null(), LoadNeurayFailed);
-        Ok(Neuray { n })
+        if n.is_null() {
+            return Err(Error::LoadNeurayFailed);
+        } else {
+            Ok(Neuray { n })
+        }
     }
 
     pub fn start(&mut self) -> Result<()> {
@@ -26,16 +29,40 @@ impl Neuray {
         }
     }
 
-    // pub fn get_api_component_database(&self) -> IDatabase;
+    pub fn get_api_component_database(&self) -> Result<Database> {
+        let ptr = unsafe { sys::ineuray_get_api_component_database(self.n) };
+        if ptr.is_null() {
+            return Err(Error::GetApiComponentFailed);
+        }
+        Ok(Database { ptr })
+    }
     // pub fn get_api_component_debug_configuration(&self) -> IDebugConfiguration;
-    // pub fn get_api_component_factory(&self) -> IFactory;
+    // pub fn get_api_component_factory(&self) -> Result<Factory> {
+    //     let f = unsafe { sys::ineuray_get_api_component_factory(self.n) };
+    //     if f.is_null() {
+    //         return Err(Error::GetApiComponentFailed);
+    //     }
+    //     Ok(Database { f })
+    // }
     // pub fn get_api_component_image_api(&self) -> IImageApi;
     // pub fn get_api_component_mdl_archive_api(&self) -> IMdlArchiveApi;
-    // pub fn get_api_component_mdl_compiler(&self) -> IMdlCompiler;
+    pub fn get_api_component_mdl_compiler(&self) -> Result<MdlCompiler> {
+        let ptr = unsafe { sys::ineuray_get_api_component_mdl_compiler(self.n) };
+        if ptr.is_null() {
+            return Err(Error::GetApiComponentFailed);
+        }
+        Ok(MdlCompiler { ptr })
+    }
     // pub fn get_api_component_discovery_api(&self) -> IMdlDiscoveryApi;
     // pub fn get_api_component_distiller_api(&self) -> IMdlDistillerApi;
     // pub fn get_api_component_evaluator_api(&self) -> IMdlEvaluatorApi;
-    // pub fn get_api_component_mdl_factory(&self) -> IMdlFactory;
+    pub fn get_api_component_mdl_factory(&self) -> Result<MdlFactory> {
+        let ptr = unsafe { sys::ineuray_get_api_component_mdl_factory(self.n) };
+        if ptr.is_null() {
+            return Err(Error::GetApiComponentFailed);
+        }
+        Ok(MdlFactory { ptr })
+    }
     // pub fn get_api_component_mdle_api(&self) -> IMdleApi;
     pub fn get_api_component_version(&self) -> Result<Version> {
         let v = unsafe { sys::ineuray_get_api_component_version(self.n) };
@@ -57,25 +84,25 @@ impl Drop for Neuray {
 
 unsafe impl Send for Neuray {}
 
-#[derive(Debug, Snafu)]
+#[derive(Debug, Error)]
 pub enum Error {
-    #[snafu(display("Could not load ineuray interface from DSO"))]
+    #[error(display = "Could not load ineuray interface from DSO")]
     LoadNeurayFailed,
-    #[snafu(display("Unspecified internal failure"))]
+    #[error(display = "Unspecified internal failure")]
     UnspecifiedFailure,
-    #[snafu(display("Challenge-response authentication failure"))]
+    #[error(display = "Challenge-response authentication failure")]
     ChallengeResponseAuthenticationFailure,
-    #[snafu(display("SPM authentication failure"))]
+    #[error(display = "SPM authentication failure")]
     SpmAuthenticationFailure,
-    #[snafu(display("Provided license expired"))]
+    #[error(display = "Provided license expired")]
     ProvidedLicenseExpired,
-    #[snafu(display("No professional GPU found as required by the license terms"))]
+    #[error(display = "No professional GPU found as required by the license terms")]
     NoProfessionalGpuFound,
-    #[snafu(display("FlexLM authentication failure"))]
+    #[error(display = "FlexLM authentication failure")]
     FlexLmAuthenticationFailure,
-    #[snafu(display("No NVidia VCA found as required by the license terms"))]
+    #[error(display = "No NVidia VCA found as required by the license terms")]
     NoNvidiaVcaFound,
-    #[snafu(display("Failed to get api component"))]
+    #[error(display = "Failed to get api component")]
     GetApiComponentFailed,
 }
 
