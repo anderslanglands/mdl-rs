@@ -1,4 +1,4 @@
-use crate::{MdlExecutionContext, Transaction, TypeFactory, ValueFactory};
+use crate::{ExpressionFactory, MdlExecutionContext, Transaction, TypeFactory, ValueFactory};
 use mdl_sys as sys;
 
 use std::ffi::CString;
@@ -47,6 +47,14 @@ impl MdlFactory {
             panic!("MdlFactory::create_value_factory() returned NULL");
         }
         ValueFactory { ptr }
+    }
+
+    pub fn create_expression_factory(&self, transaction: &Transaction) -> ExpressionFactory {
+        let ptr = unsafe { sys::IMdl_factory_create_expression_factory(self.ptr, transaction.ptr) };
+        if ptr.is_null() {
+            panic!("MdlFactory::create_expression_factory() returned NULL");
+        }
+        ExpressionFactory { ptr }
     }
 }
 

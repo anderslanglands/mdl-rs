@@ -36,6 +36,8 @@ pub mod itype;
 pub use itype::*;
 pub mod value;
 pub use value::*;
+pub mod expression;
+pub use expression::*;
 
 #[test]
 fn test_load_ineuray() {

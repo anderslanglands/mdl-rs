@@ -58,3 +58,11 @@ pub enum LoadModuleResult {
     NameAlreadyInUse = -3,
     InitializationFailed = -4,
 }
+
+#[repr(i32)]
+#[derive(Debug, Copy, Clone, PartialEq)]
+pub enum TransactionCommitResult {
+    Success = 0,
+    UnspecifiedFailure = -1,
+    TransactionAlreadyClosed = -2,
+}

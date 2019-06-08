@@ -1,4 +1,4 @@
-use crate::{base::Interface, itype::TypeList, value::ValueList};
+use crate::{base::Interface, itype::{TypeList, TypeResource}, value::ValueList};
 use mdl_sys as sys;
 
 use std::ffi::CStr;
@@ -119,6 +119,91 @@ impl Module {
             module: self,
             current: 0,
             count: self.get_material_count(),
+        }
+    }
+
+    pub fn get_resources_count(&self) -> usize {
+        unsafe { sys::IModule_get_resources_count(self.ptr) }
+    }
+
+    pub fn get_resource_name(&self, index: usize) -> Option<String> {
+        unsafe {
+            let ptr = sys::IModule_get_resource_name(self.ptr, index);
+            if ptr.is_null() {
+                None
+            } else {
+                Some(CStr::from_ptr(ptr).to_string_lossy().to_owned().to_string())
+            }
+        }
+    }
+
+    pub fn get_resource_mdl_file_path(&self, index: usize) -> Option<String> {
+        unsafe {
+            let ptr = sys::IModule_get_resource_mdl_file_path(self.ptr, index);
+            if ptr.is_null() {
+                None
+            } else {
+                Some(CStr::from_ptr(ptr).to_string_lossy().to_owned().to_string())
+            }
+        }
+    }
+
+    pub fn get_resource_type(&self, index: usize) -> Option<TypeResource> {
+        unsafe {
+            let ptr = sys::IModule_get_resource_type(self.ptr, index);
+            if ptr.is_null() {
+                None
+            } else {
+                Some(TypeResource{ptr})
+            }
+        }
+    }
+
+    pub fn resources(&self) -> ResourceIterator {
+        ResourceIterator {
+            module: self,
+            current: 0,
+            count: self.get_resources_count(),
+        }
+    }
+}
+
+pub struct ResourceRef<'a> {
+    module: &'a Module,
+    index: usize,
+}
+
+impl<'a> ResourceRef<'a> {
+    pub fn name(&self) -> Option<String> {
+        self.module.get_resource_name(self.index)
+    }
+
+    pub fn mdl_file_path(&self) -> Option<String> {
+        self.module.get_resource_mdl_file_path(self.index)
+    }
+
+    pub fn get_type(&self) -> Option<TypeResource> {
+        self.module.get_resource_type(self.index)
+    }
+}
+
+pub struct ResourceIterator<'a> {
+    module: &'a Module,
+    current: usize,
+    count: usize,
+}
+
+impl<'a> Iterator for ResourceIterator<'a> {
+    type Item = ResourceRef<'a>;
+    fn next(&mut self) -> Option<ResourceRef<'a>> {
+        if self.current < self.count {
+            self.current += 1;
+            Some(ResourceRef {
+                module: self.module,
+                index: self.current - 1,
+            })
+        } else {
+            None
         }
     }
 }

@@ -8,6 +8,8 @@ pub struct IInterface_api {
 pub type IInterface = *mut IInterface_api;
 
 extern "C" {
+    pub fn IInterface_release(i: IInterface);
+    pub fn IInterface_retain(i: IInterface);
     pub fn IInterface_get_iid(i: IInterface);
     pub fn IInterface_get_interface(i: IInterface, id: Uuid) -> IInterface;
 }

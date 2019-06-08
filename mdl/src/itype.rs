@@ -1,5 +1,7 @@
 use mdl_sys as sys;
 
+pub use sys::Kind;
+
 use std::ffi::{CStr, CString};
 use std::path::Path;
 
@@ -24,7 +26,30 @@ impl Clone for Type {
     }
 }
 
-impl Type {}
+pub trait TypeBase {
+    fn get_kind(&self) -> Kind {
+        unsafe { sys::IType_get_kind(self._ptr())}
+    }
+
+    fn _ptr(&self) -> sys::IType;
+}
+
+impl TypeBase for Type {
+    fn _ptr(&self) -> sys::IType {
+        self.ptr
+    }
+}
+
+pub struct TypeResource {
+    pub(crate) ptr: sys::ITypeResource,
+}
+
+impl TypeBase for TypeResource {
+    fn _ptr(&self) -> sys::IType {
+        self.ptr as sys::IType
+    }
+}
+
 
 pub struct TypeList {
     pub(crate) ptr: sys::ITypeList,
@@ -125,3 +150,10 @@ impl TypeFactory {
 }
 
 pub enum Error {}
+
+#[repr(i32)]
+pub enum Modifier {
+    None,
+    Uniform,
+    Varying,
+}

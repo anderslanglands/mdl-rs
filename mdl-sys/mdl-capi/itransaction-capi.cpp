@@ -13,6 +13,8 @@ typedef mi::base::IInterface IInterface;
 extern "C" {
 void ITransaction_release(ITransaction* t) { t->release(); }
 void ITransaction_retain(ITransaction* t) { t->retain(); }
+
+i32 ITransaction_commit(ITransaction* t) { return t->commit(); }
 const IMaterial_definition*
 ITransaction_access_material_definition(ITransaction* t, const char* name) {
     return t->access<IMaterial_definition>(name);

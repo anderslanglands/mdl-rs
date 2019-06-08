@@ -4,6 +4,22 @@ type Result<T, E = mdl::Error> = std::result::Result<T, E>;
 
 use std::path::Path;
 
+#[test]
+fn modules() -> Result<()> {
+    let mut neuray = NEURAY.lock().unwrap();
+
+    // configure MDL by settings module searchpaths and loading plugins
+    configure(&neuray)?;
+
+    // start the SDK
+    neuray.start()?;
+
+    // load a module and dump its results
+    load_module(&mut neuray)?;
+
+    Ok(())
+}
+
 fn configure(neuray: &Neuray) -> Result<()> {
     let mut mdl_compiler = neuray.get_api_component_mdl_compiler()?;
 
@@ -80,23 +96,68 @@ fn load_module(neuray: &mut Neuray) -> Result<()> {
 
         // Dump a function definition from the module
         let function_name = module.get_function(0);
-        println!("Dumping function definition '{}'", function_name);
+        println!("## Dumping function definition '{}'", function_name);
+
+        let function_definition = transaction.access::<FunctionDefinition>(&function_name)?;
+        dump_definition(&transaction, &mdl_factory, &function_definition, 1)?;
+
+        // Dump a material definition from the module
+        let material_name = module.get_material(0);
+        println!("## Dumping material definition '{}'", material_name);
+
+        let material_definition = transaction.access::<MaterialDefinition>(&material_name)?;
+        dump_definition(&transaction, &mdl_factory, &material_definition, 1)?;
+
+        // dump resources
+        println!("## Dumping resources of this module:");
+        for res in module.resources() {
+            if let Some(db_name) = res.name() {
+                println!("    DB name      : '{}'", db_name);
+                println!("    MDL file path: '{}'", res.mdl_file_path().unwrap());
+
+                let res_type = res.get_type().unwrap();
+                let kind = res_type.get_kind();
+                println!("    kind: {:?}", kind);
+
+            } else {
+                println!("    The module contains a resource that could not be resolved");
+                println!("    MDL file path: '{}'", res.mdl_file_path().unwrap());
+            }
+        }
     }
+
+    // all transactions need to be committed
+    transaction.commit()?;
     Ok(())
 }
 
-#[test]
-fn modules() -> Result<()> {
-    let mut neuray = NEURAY.lock().unwrap();
+fn dump_definition<D: Definition>(
+    transaction: &Transaction,
+    mdl_factory: &MdlFactory,
+    definition: &D,
+    depth: usize,
+) -> Result<()> {
+    let type_factory = mdl_factory.create_type_factory(&transaction);
+    let expression_factory = mdl_factory.create_expression_factory(&transaction);
 
-    // configure MDL by settings module searchpaths and loading plugins
-    configure(&neuray)?;
+    let count = definition.get_parameter_count();
+    let type_list = definition.get_parameter_types();
+    let defaults = definition.get_defaults();
 
-    // start the SDK
-    neuray.start()?;
+    for i in 0..count {
+        let typ = type_list.get_type(i).unwrap();
+        let type_text = type_factory.dump(&typ, depth + 1).unwrap();
+        let name = definition.get_parameter_name(i).unwrap();
 
-    // load a module and dump its results
-    load_module(&mut neuray)?;
+        if let Some(expr_default) = defaults.get_expression_by_name(&name) {
+            let default_text = expression_factory
+                .dump(&expr_default, None, depth + 1)
+                .unwrap();
+            println!("    parameter {} {} = {}", type_text, name, default_text);
+        } else {
+            println!("    parameter {} {} = <no default>", type_text, name);
+        }
+    }
 
     Ok(())
 }

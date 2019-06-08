@@ -1,6 +1,6 @@
 use crate::{
     function_definition::IFunctionDefinition, interface::IInterface,
-    material_definition::IMaterialDefinition, module::IModule,
+    material_definition::IMaterialDefinition, module::IModule, results::TransactionCommitResult,
 };
 use std::os::raw::c_char;
 
@@ -14,6 +14,7 @@ pub type ITransaction = *mut ITransaction_api;
 extern "C" {
     pub fn ITransaction_release(s: ITransaction);
     pub fn ITransaction_retain(s: ITransaction);
+    pub fn ITransaction_commit(s: ITransaction) -> TransactionCommitResult;
     pub fn ITransaction_access_function_definition(
         s: ITransaction,
         name: *const c_char,

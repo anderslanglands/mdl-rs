@@ -38,10 +38,24 @@ impl Transaction {
             Ok(T::from_interface(ptr))
         }
     }
+
+    pub fn commit(&self) -> Result<()> {
+        match unsafe { sys::ITransaction_commit(self.ptr) } {
+            sys::TransactionCommitResult::Success => Ok(()),
+            sys::TransactionCommitResult::UnspecifiedFailure => Err(Error::UnspecifiedFailure),
+            sys::TransactionCommitResult::TransactionAlreadyClosed => {
+                Err(Error::TransactionAlreadyClosed)
+            }
+        }
+    }
 }
 
 #[derive(Debug, Error)]
 pub enum Error {
     #[error(display = "Transaction access to item '{}' failed", name)]
     AccessFailed { name: String },
+    #[error(display = "Unspecified failure in ITransaction::commit()")]
+    UnspecifiedFailure,
+    #[error(display = "Transaction already closed when committing")]
+    TransactionAlreadyClosed,
 }

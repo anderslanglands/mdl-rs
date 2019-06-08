@@ -18,9 +18,17 @@ pub mod module;
 pub use module::Module;
 pub mod base;
 pub mod itype;
-pub use itype::{Type, TypeFactory, TypeList};
+pub use itype::{Type, TypeFactory, TypeList, TypeResource, TypeBase};
 pub mod value;
 pub use value::{Value, ValueFactory, ValueList};
+pub mod expression;
+pub use expression::{Expression, ExpressionFactory, ExpressionList};
+pub mod function_definition;
+pub use function_definition::FunctionDefinition;
+pub mod material_definition;
+pub use material_definition::MaterialDefinition;
+pub mod definition;
+pub use definition::Definition;
 
 pub use mdl_sys::Uuid;
 
@@ -39,6 +47,8 @@ pub enum Error {
     MdlCompilerError { source: mdl_compiler::Error },
     #[error(display = "{:?}", source)]
     DatabaseError { source: database::Error },
+    #[error(display = "{:?}", source)]
+    TransactionError { source: transaction::Error },
 }
 
 impl From<neuray::Error> for Error {
@@ -56,6 +66,12 @@ impl From<mdl_compiler::Error> for Error {
 impl From<database::Error> for Error {
     fn from(e: database::Error) -> Error {
         Error::DatabaseError { source: e }
+    }
+}
+
+impl From<transaction::Error> for Error {
+    fn from(e: transaction::Error) -> Error {
+        Error::TransactionError { source: e }
     }
 }
 

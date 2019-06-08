@@ -8,6 +8,7 @@ typedef mi::neuraylib::IType IType;
 typedef mi::neuraylib::IMdl_execution_context IMdl_execution_context;
 typedef mi::neuraylib::IType_factory IType_factory;
 typedef mi::neuraylib::IValue_factory IValue_factory;
+typedef mi::neuraylib::IExpression_factory IExpression_factory;
 
 extern "C" {
 void IMdl_factory_release(IMdl_factory* f) { f->release(); }
@@ -23,5 +24,10 @@ IType_factory* IMdl_factory_create_type_factory(IMdl_factory* f,
 IValue_factory* IMdl_factory_create_value_factory(IMdl_factory* f,
                                                   ITransaction* t) {
     return f->create_value_factory(t);
+}
+
+IExpression_factory* IMdl_factory_create_expression_factory(IMdl_factory* f,
+                                                            ITransaction* t) {
+    return f->create_expression_factory(t);
 }
 }
