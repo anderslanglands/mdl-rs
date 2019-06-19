@@ -3,6 +3,7 @@ use crate::{
     mdl_execution_context::IMdlExecutionContext,
     results::{AddPathResult, BackendSetOptionResult, BooleanResult, LoadModuleResult},
     transaction::ITransaction,
+    base::Uuid,
 };
 
 use std::os::raw::c_char;
@@ -18,6 +19,7 @@ pub enum MdlBackendKind {
 extern "C" {
     pub fn IMdl_compiler_release(c: IMdlCompiler);
     pub fn IMdl_compiler_retain(c: IMdlCompiler);
+    pub fn IMdl_compiler_type_get_iid() -> Uuid;
     pub fn IMdl_compiler_add_module_path(c: IMdlCompiler, path: *const c_char) -> AddPathResult;
     pub fn IMdl_compiler_remove_module_path(c: IMdlCompiler, path: *const c_char) -> AddPathResult;
     pub fn IMdl_compiler_clear_module_paths(c: IMdlCompiler);

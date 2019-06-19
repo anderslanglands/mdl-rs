@@ -18,7 +18,7 @@ pub mod module;
 pub use module::Module;
 pub mod base;
 pub mod itype;
-pub use itype::{Type, TypeFactory, TypeList, TypeResource, TypeBase};
+pub use itype::{Type, TypeBase, TypeFactory, TypeList, TypeResource};
 pub mod value;
 pub use value::{Value, ValueFactory, ValueList};
 pub mod expression;
@@ -29,6 +29,8 @@ pub mod material_definition;
 pub use material_definition::MaterialDefinition;
 pub mod definition;
 pub use definition::Definition;
+pub mod discovery;
+pub use discovery::*;
 
 pub use mdl_sys::Uuid;
 
@@ -76,6 +78,9 @@ impl From<transaction::Error> for Error {
 }
 
 lazy_static! {
-    pub static ref NEURAY: Mutex<Neuray> =
-        { Mutex::new(Neuray::new().expect("Could not load ineuray interface from DSO")) };
+    pub static ref NEURAY: Mutex<Neuray> = {
+        Mutex::new(
+            Neuray::new().expect("Could not load ineuray interface from DSO"),
+        )
+    };
 }

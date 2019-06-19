@@ -38,6 +38,8 @@ pub mod value;
 pub use value::*;
 pub mod expression;
 pub use expression::*;
+pub mod discovery;
+pub use discovery::*;
 
 #[test]
 fn test_load_ineuray() {

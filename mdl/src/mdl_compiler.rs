@@ -1,7 +1,9 @@
 use mdl_sys as sys;
 
-use crate::{mdl_execution_context::MdlExecutionContext, transaction::Transaction};
-
+use crate::{
+    base::Interface, mdl_execution_context::MdlExecutionContext, neuray::ApiComponent,
+    transaction::Transaction,
+};
 use std::ffi::CString;
 use std::path::Path;
 
@@ -83,6 +85,29 @@ impl MdlCompiler {
         }
     }
 }
+
+impl Interface for MdlCompiler {
+    fn from_interface(i: sys::IInterface) -> MdlCompiler {
+        let i = unsafe { sys::IInterface_get_interface(i, Self::type_iid()) };
+        if i.is_null() {
+            panic!("Tried to convert from null interface");
+        }
+
+        MdlCompiler {
+            ptr: i as *mut sys::IMdlCompiler_api,
+        }
+    }
+
+    fn to_interface(&self) -> sys::IInterface {
+        self.ptr as *mut sys::IInterface_api
+    }
+
+    fn type_iid() -> sys::Uuid {
+        unsafe { sys::IMdl_compiler_type_get_iid() }
+    }
+}
+
+impl ApiComponent for MdlCompiler {}
 
 #[derive(Debug, Error)]
 pub enum Error {

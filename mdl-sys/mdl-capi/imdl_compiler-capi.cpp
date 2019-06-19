@@ -6,11 +6,13 @@ typedef mi::neuraylib::IMdl_compiler::Mdl_backend_kind Mdl_backend_kind;
 typedef mi::neuraylib::IMdl_backend IMdl_backend;
 typedef mi::neuraylib::IMdl_execution_context IMdl_execution_context;
 typedef mi::neuraylib::ITransaction ITransaction;
+typedef mi::base::Uuid Uuid;
 
 extern "C" {
 
 void IMdl_compiler_release(IMdl_compiler* c) { c->release(); }
 void IMdl_compiler_retain(IMdl_compiler* c) { c->retain(); }
+Uuid IMdl_compiler_type_get_iid() { return IMdl_compiler::IID(); }
 
 i32 IMdl_compiler_add_module_path(IMdl_compiler* c, const char* path) {
     return c->add_module_path(path);

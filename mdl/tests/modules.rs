@@ -36,7 +36,7 @@ fn configure(neuray: &Neuray) -> Result<()> {
 }
 
 fn load_module(neuray: &mut Neuray) -> Result<()> {
-    let database = neuray.get_api_component_database()?;
+    let database = neuray.get_api_component::<Database>()?;
     let mut scope = database.get_global_scope()?;
     let transaction = scope.create_transaction();
     {
@@ -95,18 +95,22 @@ fn load_module(neuray: &mut Neuray) -> Result<()> {
         }
 
         // Dump a function definition from the module
-        let function_name = module.get_function(0);
-        println!("## Dumping function definition '{}'", function_name);
+        if module.get_function_count() > 0 {
+            let function_name = module.get_function(0).unwrap();
+            println!("## Dumping function definition '{}'", function_name);
 
-        let function_definition = transaction.access::<FunctionDefinition>(&function_name)?;
-        dump_definition(&transaction, &mdl_factory, &function_definition, 1)?;
+            let function_definition = transaction.access::<FunctionDefinition>(&function_name)?;
+            dump_definition(&transaction, &mdl_factory, &function_definition, 1)?;
+        }
 
         // Dump a material definition from the module
-        let material_name = module.get_material(0);
-        println!("## Dumping material definition '{}'", material_name);
+        if module.get_material_count() > 0 {
+            let material_name = module.get_material(0).unwrap();
+            println!("## Dumping material definition '{}'", material_name);
 
-        let material_definition = transaction.access::<MaterialDefinition>(&material_name)?;
-        dump_definition(&transaction, &mdl_factory, &material_definition, 1)?;
+            let material_definition = transaction.access::<MaterialDefinition>(&material_name)?;
+            dump_definition(&transaction, &mdl_factory, &material_definition, 1)?;
+        }
 
         // dump resources
         println!("## Dumping resources of this module:");

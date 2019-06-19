@@ -84,12 +84,17 @@ impl Module {
         unsafe { sys::IModule_get_function_count(self.ptr) }
     }
 
-    pub fn get_function(&self, index: usize) -> String {
+    pub fn get_function(&self, index: usize) -> Option<String> {
         unsafe {
-            CStr::from_ptr(sys::IModule_get_function(self.ptr, index))
-                .to_string_lossy()
-                .to_owned()
-                .to_string()
+            let ptr =sys::IModule_get_function(self.ptr, index);
+            if ptr.is_null() {
+                None
+            } else {
+                Some(CStr::from_ptr(ptr)
+                    .to_string_lossy()
+                    .to_owned()
+                    .to_string())
+            }
         }
     }
 
@@ -105,12 +110,17 @@ impl Module {
         unsafe { sys::IModule_get_material_count(self.ptr) }
     }
 
-    pub fn get_material(&self, index: usize) -> String {
+    pub fn get_material(&self, index: usize) -> Option<String> {
         unsafe {
-            CStr::from_ptr(sys::IModule_get_material(self.ptr, index))
-                .to_string_lossy()
-                .to_owned()
-                .to_string()
+            let ptr = sys::IModule_get_material(self.ptr, index);
+            if ptr.is_null() {
+                None
+            } else {
+                Some(CStr::from_ptr(ptr)
+                    .to_string_lossy()
+                    .to_owned()
+                    .to_string())
+            }
         }
     }
 
@@ -237,7 +247,7 @@ impl<'a> Iterator for FunctionIterator<'a> {
     fn next(&mut self) -> Option<String> {
         if self.current < self.count {
             self.current += 1;
-            Some(self.module.get_function(self.current - 1))
+            self.module.get_function(self.current - 1)
         } else {
             None
         }
@@ -255,7 +265,7 @@ impl<'a> Iterator for MaterialIterator<'a> {
     fn next(&mut self) -> Option<String> {
         if self.current < self.count {
             self.current += 1;
-            Some(self.module.get_material(self.current - 1))
+            self.module.get_material(self.current - 1)
         } else {
             None
         }

@@ -1,8 +1,9 @@
-use crate::scope::Scope;
+use crate::{
+    scope::Scope,
+    base::Interface,
+    neuray::ApiComponent,
+};
 use mdl_sys as sys;
-
-use std::ffi::CString;
-use std::path::Path;
 
 use err_derive::Error;
 
@@ -32,6 +33,29 @@ impl Database {
         }
     }
 }
+
+impl Interface for Database {
+    fn from_interface(i: sys::IInterface) -> Database {
+        let i = unsafe { sys::IInterface_get_interface(i, Self::type_iid()) };
+        if i.is_null() {
+            panic!("Tried to convert from null interface");
+        }
+
+        Database {
+            ptr: i as *mut sys::IDatabase_api,
+        }
+    }
+
+    fn to_interface(&self) -> sys::IInterface {
+        self.ptr as *mut sys::IInterface_api
+    }
+
+    fn type_iid() -> sys::Uuid {
+        unsafe { sys::IDatabase_type_get_iid() }
+    }
+}
+
+impl ApiComponent for Database {}
 
 #[derive(Debug, Error)]
 pub enum Error {

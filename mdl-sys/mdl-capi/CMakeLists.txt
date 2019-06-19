@@ -23,6 +23,7 @@ add_library(mdl-capi STATIC
     itype-capi.cpp
     ivalue-capi.cpp
     iexpression-capi.cpp
+    imdl_discovery_api-capi.cpp
     )
 target_include_directories(mdl-capi PUBLIC ${INC_MDL})
 # target_link_libraries(mdl-capi PUBLIC)

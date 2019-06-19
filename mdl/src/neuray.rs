@@ -1,6 +1,7 @@
 use mdl_sys as sys;
 
 use crate::{Database, MdlCompiler, MdlFactory, Version};
+use crate::base::Interface;
 
 use err_derive::Error;
 
@@ -9,6 +10,10 @@ pub struct Neuray {
 }
 
 type Result<T, E = Error> = std::result::Result<T, E>;
+
+pub trait ApiComponent : Interface {
+
+}
 
 impl Neuray {
     pub fn new() -> Result<Neuray> {
@@ -29,48 +34,12 @@ impl Neuray {
         }
     }
 
-    pub fn get_api_component_database(&self) -> Result<Database> {
-        let ptr = unsafe { sys::ineuray_get_api_component_database(self.n) };
+    pub fn get_api_component<C: ApiComponent>(&self) -> Result<C> {
+        let ptr = unsafe { sys::ineuray_get_api_component(self.n, C::type_iid()) };
         if ptr.is_null() {
             return Err(Error::GetApiComponentFailed);
         }
-        Ok(Database { ptr })
-    }
-    // pub fn get_api_component_debug_configuration(&self) -> IDebugConfiguration;
-    // pub fn get_api_component_factory(&self) -> Result<Factory> {
-    //     let f = unsafe { sys::ineuray_get_api_component_factory(self.n) };
-    //     if f.is_null() {
-    //         return Err(Error::GetApiComponentFailed);
-    //     }
-    //     Ok(Database { f })
-    // }
-    // pub fn get_api_component_image_api(&self) -> IImageApi;
-    // pub fn get_api_component_mdl_archive_api(&self) -> IMdlArchiveApi;
-    pub fn get_api_component_mdl_compiler(&self) -> Result<MdlCompiler> {
-        let ptr = unsafe { sys::ineuray_get_api_component_mdl_compiler(self.n) };
-        if ptr.is_null() {
-            return Err(Error::GetApiComponentFailed);
-        }
-        Ok(MdlCompiler { ptr })
-    }
-    // pub fn get_api_component_discovery_api(&self) -> IMdlDiscoveryApi;
-    // pub fn get_api_component_distiller_api(&self) -> IMdlDistillerApi;
-    // pub fn get_api_component_evaluator_api(&self) -> IMdlEvaluatorApi;
-    pub fn get_api_component_mdl_factory(&self) -> Result<MdlFactory> {
-        let ptr = unsafe { sys::ineuray_get_api_component_mdl_factory(self.n) };
-        if ptr.is_null() {
-            return Err(Error::GetApiComponentFailed);
-        }
-        Ok(MdlFactory { ptr })
-    }
-    // pub fn get_api_component_mdle_api(&self) -> IMdleApi;
-    pub fn get_api_component_version(&self) -> Result<Version> {
-        let v = unsafe { sys::ineuray_get_api_component_version(self.n) };
-        if v.is_null() {
-            Err(Error::GetApiComponentFailed)
-        } else {
-            Ok({ Version { v } })
-        }
+        Ok(C::from_interface(ptr))
     }
 }
 
