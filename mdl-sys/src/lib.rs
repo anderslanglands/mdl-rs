@@ -44,6 +44,10 @@ pub mod discovery;
 pub use discovery::*;
 pub mod compiled_material;
 pub use compiled_material::*;
+pub mod scene_element;
+pub use scene_element::*;
+pub mod definition_wrapper;
+pub use definition_wrapper::*;
 
 #[test]
 fn test_load_ineuray() {

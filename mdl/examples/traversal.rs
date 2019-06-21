@@ -64,11 +64,31 @@ pub fn main() {
                 .access::<Module>(&format!("mdl{}", opt.module_name))
                 .unwrap();
 
-            for material in module.materials() {
-                println!("Accessing material '{}'", material);
+            for material_name in module.materials() {
+                println!("Accessing material '{}'", material_name);
                 let material = transaction
-                    .access::<MaterialDefinition>(&material)
+                    .access::<MaterialDefinition>(&material_name)
                     .unwrap();
+
+                let definition_wrapper = DefinitionWrapper::new(
+                    &transaction,
+                    &material_name,
+                    &factory,
+                )
+                .unwrap();
+
+                let material_instance_se =
+                    match definition_wrapper.create_instance(None) {
+                        Ok(se) => se,
+                        Err(e) => {
+                            println!(
+                                "Failed to create material instance of {}",
+                                material_name
+                            );
+                            continue;
+                        }
+                    };
+
             }
         }
     }

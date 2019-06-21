@@ -37,6 +37,10 @@ pub mod discovery;
 pub use discovery::*;
 pub mod image_api;
 pub use image_api::*;
+pub mod definition_wrapper;
+pub use definition_wrapper::*;
+pub mod scene_element;
+pub use scene_element::*;
 
 pub use mdl_sys::Uuid;
 

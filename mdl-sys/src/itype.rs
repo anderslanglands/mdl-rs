@@ -28,7 +28,11 @@ extern "C" {
 
     pub fn IType_factory_release(f: ITypeFactory);
     pub fn IType_factory_retain(f: ITypeFactory);
-    pub fn IType_factory_dump(f: ITypeFactory, typ: IType, depth: usize) -> *const c_char;
+    pub fn IType_factory_dump(
+        f: ITypeFactory,
+        typ: IType,
+        depth: usize,
+    ) -> *const c_char;
 }
 
 #[repr(i32)]

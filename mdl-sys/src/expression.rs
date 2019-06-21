@@ -28,10 +28,22 @@ extern "C" {
     pub fn IExpression_list_release(l: IExpressionList);
     pub fn IExpression_list_retain(l: IExpressionList);
     pub fn IExpression_list_get_size(l: IExpressionList) -> usize;
-    pub fn IExpression_list_get_index(l: IExpressionList, name: *const c_char) -> usize;
-    pub fn IExpression_list_get_name(l: IExpressionList, index: usize) -> *const c_char;
-    pub fn IExpression_list_get_expression(l: IExpressionList, index: usize) -> IExpression;
-    pub fn IExpression_list_get_expression_by_name(l: IExpressionList, name: *const c_char) -> IExpression;
+    pub fn IExpression_list_get_index(
+        l: IExpressionList,
+        name: *const c_char,
+    ) -> usize;
+    pub fn IExpression_list_get_name(
+        l: IExpressionList,
+        index: usize,
+    ) -> *const c_char;
+    pub fn IExpression_list_get_expression(
+        l: IExpressionList,
+        index: usize,
+    ) -> IExpression;
+    pub fn IExpression_list_get_expression_by_name(
+        l: IExpressionList,
+        name: *const c_char,
+    ) -> IExpression;
 
     pub fn IExpression_factory_release(f: IExpressionFactory);
     pub fn IExpression_factory_retain(f: IExpressionFactory);
@@ -43,3 +55,16 @@ extern "C" {
     ) -> *const c_char;
 }
 
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct IAnnotationBlock_api {
+    _unused: [u8; 0],
+}
+pub type IAnnotationBlock = *mut IAnnotationBlock_api;
+
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct IAnnotationList_api {
+    _unused: [u8; 0],
+}
+pub type IAnnotationList = *mut IAnnotationList_api;

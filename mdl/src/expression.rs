@@ -165,4 +165,12 @@ impl ExpressionFactory {
     }
 }
 
+pub struct AnnotationBlock {
+    pub(crate) ptr: sys::IAnnotationBlock,
+}
+
+pub struct AnnotationList {
+    pub(crate) ptr: sys::IAnnotationList,
+}
+
 pub enum Error {}

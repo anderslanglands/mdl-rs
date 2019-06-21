@@ -26,6 +26,7 @@ add_library(mdl-capi STATIC
     iexpression-capi.cpp
     imdl_discovery_api-capi.cpp
     icompiled_material-capi.cpp
+    definition_wrapper-capi.cpp
     )
 target_include_directories(mdl-capi PUBLIC ${INC_MDL})
 # target_link_libraries(mdl-capi PUBLIC)
