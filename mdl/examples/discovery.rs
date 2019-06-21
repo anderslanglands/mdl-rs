@@ -1,7 +1,6 @@
 use mdl::base::Interface;
 use mdl::*;
 type Result<T, E = mdl::Error> = std::result::Result<T, E>;
-use std::path::PathBuf;
 
 use structopt::StructOpt;
 

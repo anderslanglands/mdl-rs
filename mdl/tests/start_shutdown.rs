@@ -7,7 +7,7 @@ fn start_shutdown() -> Result<()> {
     let mut neuray = NEURAY.lock().unwrap();
 
     let version = neuray
-        .get_api_component_version()
+        .get_api_component::<Version>()
         .expect("Could not get version component");
 
     println!("MDL product name:    {}", version.get_product_name());

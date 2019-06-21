@@ -4,7 +4,8 @@ use std::path::Path;
 
 pub fn main() {
     let mut settings = config::Config::default();
-    let mdl_root = std::env::var("MDL_ROOT").expect("MDL_ROOT env var must be set to root of MDL installation");
+    let mdl_root = std::env::var("MDL_ROOT")
+        .expect("MDL_ROOT env var must be set to root of MDL installation");
 
     let inc_mdl = Path::new(&mdl_root).join("include");
 

@@ -1,0 +1,15 @@
+mdl 1.3;
+
+import state::*;
+import df::*;
+import base::*;
+import math::*;
+import tex::*;
+
+export material red() = material(
+    surface: material_surface (
+        scattering: df::diffuse_reflection_bsdf (
+            tint: color(0.3, 0.03, 0.05)
+        )
+    )
+);

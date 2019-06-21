@@ -15,3 +15,13 @@ impl std::fmt::Display for Uuid {
         )
     }
 }
+
+#[repr(u32)]
+pub enum MessageSeverity {
+    Fatal,
+    Error,
+    Warning,
+    Info,
+    Verbose,
+    Debug,
+}

@@ -21,7 +21,7 @@ fn modules() -> Result<()> {
 }
 
 fn configure(neuray: &Neuray) -> Result<()> {
-    let mut mdl_compiler = neuray.get_api_component_mdl_compiler()?;
+    let mut mdl_compiler = neuray.get_api_component::<MdlCompiler>()?;
 
     // set the module and texture search paths
     let mdl_samples_root = Path::new(&std::env::var("MDL_ROOT").unwrap())
@@ -40,8 +40,8 @@ fn load_module(neuray: &mut Neuray) -> Result<()> {
     let mut scope = database.get_global_scope()?;
     let transaction = scope.create_transaction();
     {
-        let mdl_compiler = neuray.get_api_component_mdl_compiler()?;
-        let mdl_factory = neuray.get_api_component_mdl_factory()?;
+        let mdl_compiler = neuray.get_api_component::<MdlCompiler>()?;
+        let mdl_factory = neuray.get_api_component::<MdlFactory>()?;
 
         let execution_context = mdl_factory.create_execution_context();
 
@@ -99,8 +99,14 @@ fn load_module(neuray: &mut Neuray) -> Result<()> {
             let function_name = module.get_function(0).unwrap();
             println!("## Dumping function definition '{}'", function_name);
 
-            let function_definition = transaction.access::<FunctionDefinition>(&function_name)?;
-            dump_definition(&transaction, &mdl_factory, &function_definition, 1)?;
+            let function_definition =
+                transaction.access::<FunctionDefinition>(&function_name)?;
+            dump_definition(
+                &transaction,
+                &mdl_factory,
+                &function_definition,
+                1,
+            )?;
         }
 
         // Dump a material definition from the module
@@ -108,8 +114,14 @@ fn load_module(neuray: &mut Neuray) -> Result<()> {
             let material_name = module.get_material(0).unwrap();
             println!("## Dumping material definition '{}'", material_name);
 
-            let material_definition = transaction.access::<MaterialDefinition>(&material_name)?;
-            dump_definition(&transaction, &mdl_factory, &material_definition, 1)?;
+            let material_definition =
+                transaction.access::<MaterialDefinition>(&material_name)?;
+            dump_definition(
+                &transaction,
+                &mdl_factory,
+                &material_definition,
+                1,
+            )?;
         }
 
         // dump resources
@@ -117,7 +129,10 @@ fn load_module(neuray: &mut Neuray) -> Result<()> {
         for res in module.resources() {
             if let Some(db_name) = res.name() {
                 println!("    DB name      : '{}'", db_name);
-                println!("    MDL file path: '{}'", res.mdl_file_path().unwrap());
+                println!(
+                    "    MDL file path: '{}'",
+                    res.mdl_file_path().unwrap()
+                );
 
                 let res_type = res.get_type().unwrap();
                 let kind = res_type.get_kind();
@@ -125,7 +140,10 @@ fn load_module(neuray: &mut Neuray) -> Result<()> {
 
             } else {
                 println!("    The module contains a resource that could not be resolved");
-                println!("    MDL file path: '{}'", res.mdl_file_path().unwrap());
+                println!(
+                    "    MDL file path: '{}'",
+                    res.mdl_file_path().unwrap()
+                );
             }
         }
     }
@@ -142,7 +160,8 @@ fn dump_definition<D: Definition>(
     depth: usize,
 ) -> Result<()> {
     let type_factory = mdl_factory.create_type_factory(&transaction);
-    let expression_factory = mdl_factory.create_expression_factory(&transaction);
+    let expression_factory =
+        mdl_factory.create_expression_factory(&transaction);
 
     let count = definition.get_parameter_count();
     let type_list = definition.get_parameter_types();

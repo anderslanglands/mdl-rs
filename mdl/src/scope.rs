@@ -1,11 +1,6 @@
 use crate::transaction::Transaction;
 use mdl_sys as sys;
 
-use std::ffi::CString;
-use std::path::Path;
-
-use err_derive::Error;
-
 type Result<T, E = Error> = std::result::Result<T, E>;
 
 pub struct Scope {

@@ -1,7 +1,8 @@
-use crate::{ExpressionFactory, MdlExecutionContext, Transaction, TypeFactory, ValueFactory};
+use crate::{
+    base::Interface, neuray::ApiComponent, ExpressionFactory,
+    MdlExecutionContext, Transaction, TypeFactory, ValueFactory,
+};
 use mdl_sys as sys;
-
-use std::ffi::CString;
 
 type Result<T, E = Error> = std::result::Result<T, E>;
 
@@ -26,36 +27,78 @@ impl Clone for MdlFactory {
 
 impl MdlFactory {
     pub fn create_execution_context(&self) -> MdlExecutionContext {
-        let ptr = unsafe { sys::IMdl_factory_create_execution_context(self.ptr) };
+        let ptr =
+            unsafe { sys::IMdl_factory_create_execution_context(self.ptr) };
         if ptr.is_null() {
             panic!("MdlFactory::create_execution_context returned null ptr");
         }
         MdlExecutionContext { ptr }
     }
 
-    pub fn create_type_factory(&self, transaction: &Transaction) -> TypeFactory {
-        let ptr = unsafe { sys::IMdl_factory_create_type_factory(self.ptr, transaction.ptr) };
+    pub fn create_type_factory(
+        &self,
+        transaction: &Transaction,
+    ) -> TypeFactory {
+        let ptr = unsafe {
+            sys::IMdl_factory_create_type_factory(self.ptr, transaction.ptr)
+        };
         if ptr.is_null() {
             panic!("MdlFactory::create_type_factory() returned NULL");
         }
         TypeFactory { ptr }
     }
 
-    pub fn create_value_factory(&self, transaction: &Transaction) -> ValueFactory {
-        let ptr = unsafe { sys::IMdl_factory_create_value_factory(self.ptr, transaction.ptr) };
+    pub fn create_value_factory(
+        &self,
+        transaction: &Transaction,
+    ) -> ValueFactory {
+        let ptr = unsafe {
+            sys::IMdl_factory_create_value_factory(self.ptr, transaction.ptr)
+        };
         if ptr.is_null() {
             panic!("MdlFactory::create_value_factory() returned NULL");
         }
         ValueFactory { ptr }
     }
 
-    pub fn create_expression_factory(&self, transaction: &Transaction) -> ExpressionFactory {
-        let ptr = unsafe { sys::IMdl_factory_create_expression_factory(self.ptr, transaction.ptr) };
+    pub fn create_expression_factory(
+        &self,
+        transaction: &Transaction,
+    ) -> ExpressionFactory {
+        let ptr = unsafe {
+            sys::IMdl_factory_create_expression_factory(
+                self.ptr,
+                transaction.ptr,
+            )
+        };
         if ptr.is_null() {
             panic!("MdlFactory::create_expression_factory() returned NULL");
         }
         ExpressionFactory { ptr }
     }
 }
+
+impl Interface for MdlFactory {
+    fn from_interface(i: sys::IInterface) -> MdlFactory {
+        let i = unsafe { sys::IInterface_get_interface(i, Self::type_iid()) };
+        if i.is_null() {
+            panic!("Tried to convert from null interface");
+        }
+
+        MdlFactory {
+            ptr: i as *mut sys::IMdlFactory_api,
+        }
+    }
+
+    fn to_interface(&self) -> sys::IInterface {
+        self.ptr as *mut sys::IInterface_api
+    }
+
+    fn type_iid() -> sys::Uuid {
+        unsafe { sys::IMdl_factory_type_get_iid() }
+    }
+}
+
+impl ApiComponent for MdlFactory {}
 
 pub enum Error {}

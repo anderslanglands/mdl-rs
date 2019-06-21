@@ -3,6 +3,7 @@
 #include <mi/neuraylib/imaterial_definition.h>
 
 typedef mi::neuraylib::IMaterial_definition IMaterial_definition;
+typedef mi::neuraylib::IMaterial_instance IMaterial_instance;
 typedef mi::neuraylib::IExpression_list IExpression_list;
 typedef mi::neuraylib::IType_list IType_list;
 typedef mi::base::Uuid Uuid;
@@ -33,5 +34,10 @@ const char* IMaterial_definition_get_parameter_name(IMaterial_definition* t,
 usize IMaterial_definition_get_parameter_index(IMaterial_definition* t,
                                                const char* name) {
     return t->get_parameter_index(name);
+}
+
+IMaterial_instance* IMaterial_definition_create_material_instance(
+    IMaterial_definition* md, IExpression_list* arguments, i32* errors) {
+    return md->create_material_instance(arguments, errors);
 }
 }

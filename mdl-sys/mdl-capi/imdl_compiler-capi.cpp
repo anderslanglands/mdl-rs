@@ -1,7 +1,11 @@
 #include "capi-typedefs.h"
 #include <mi/neuraylib/imdl_compiler.h>
 
+#include <stdio.h>
+
 typedef mi::neuraylib::IMdl_compiler IMdl_compiler;
+typedef mi::neuraylib::ITarget_code ITarget_code;
+typedef mi::neuraylib::ICompiled_material ICompiled_material;
 typedef mi::neuraylib::IMdl_compiler::Mdl_backend_kind Mdl_backend_kind;
 typedef mi::neuraylib::IMdl_backend IMdl_backend;
 typedef mi::neuraylib::IMdl_execution_context IMdl_execution_context;
@@ -47,4 +51,21 @@ i32 IMdl_backend_set_option(IMdl_backend* be, const char* name,
                             const char* value) {
     return be->set_option(name, value);
 }
+Uuid IMdl_backend_type_get_iid() { return IMdl_backend::IID(); }
+ITarget_code* IMdl_backend_translate_material_expression(
+    IMdl_backend* be, ITransaction* transaction,
+    const ICompiled_material* compiled_material, const char* path,
+    const char* fname, IMdl_execution_context* ctx) {
+    be->translate_material_expression(transaction, compiled_material, path,
+                                      fname, ctx);
+}
+}
+
+extern "C" {
+void ITarget_code_release(ITarget_code* t) { t->release(); }
+void ITarget_code_retain(ITarget_code* t) { t->retain(); }
+bool ITarget_code_compare_iid(Uuid id) { ITarget_code::compare_iid(id); }
+Uuid ITarget_code_type_get_iid() { return ITarget_code::IID(); }
+const char* ITarget_code_get_code(ITarget_code* c) { return c->get_code(); }
+usize ITarget_code_get_code_size(ITarget_code* c) { return c->get_code_size(); }
 }

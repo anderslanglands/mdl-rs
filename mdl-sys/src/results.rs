@@ -66,3 +66,16 @@ pub enum TransactionCommitResult {
     UnspecifiedFailure = -1,
     TransactionAlreadyClosed = -2,
 }
+
+#[repr(i32)]
+#[derive(Debug, Copy, Clone, PartialEq)]
+pub enum CreateMaterialInstanceResult {
+    Success = 0,
+    NonExistingParameter = -1,
+    ParameterTypeMismatch = -2,
+    NonDefaultParameterMissing = -3,
+    DefinitionNotExported = -4,
+    UniformParameterGivenVaryingArgument = -5,
+    ArgumentExpressionNotConstantNorCall = -6,
+    UniformParameterGivenCallExpression = -8,
+}

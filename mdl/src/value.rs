@@ -1,9 +1,7 @@
 use mdl_sys as sys;
 
 use std::ffi::{CStr, CString};
-use std::path::Path;
 
-use err_derive::Error;
 
 type Result<T, E = Error> = std::result::Result<T, E>;
 
@@ -50,7 +48,8 @@ impl ValueList {
 
     pub fn get_index(&self, name: &str) -> Option<usize> {
         let cname = CString::new(name).unwrap();
-        let index = unsafe { sys::IValue_list_get_index(self.ptr, cname.as_ptr()) };
+        let index =
+            unsafe { sys::IValue_list_get_index(self.ptr, cname.as_ptr()) };
         if index == std::usize::MAX {
             None
         } else {
@@ -113,18 +112,34 @@ pub struct ValueFactory {
 }
 
 impl ValueFactory {
-    pub fn dump(&self, t: &Value, name: Option<&str>, depth: usize) -> Option<String> {
+    pub fn dump(
+        &self,
+        t: &Value,
+        name: Option<&str>,
+        depth: usize,
+    ) -> Option<String> {
         let ptr = if let Some(name) = name {
             let name = CString::new(name).unwrap();
-            unsafe { sys::IValue_factory_dump(self.ptr, t.ptr, name.as_ptr(), depth) }
+            unsafe {
+                sys::IValue_factory_dump(self.ptr, t.ptr, name.as_ptr(), depth)
+            }
         } else {
-            unsafe { sys::IValue_factory_dump(self.ptr, t.ptr, std::ptr::null(), depth) }
+            unsafe {
+                sys::IValue_factory_dump(
+                    self.ptr,
+                    t.ptr,
+                    std::ptr::null(),
+                    depth,
+                )
+            }
         };
 
         if ptr.is_null() {
             None
         } else {
-            Some(unsafe { CStr::from_ptr(ptr).to_string_lossy().to_owned().to_string() })
+            Some(unsafe {
+                CStr::from_ptr(ptr).to_string_lossy().to_owned().to_string()
+            })
         }
     }
 }

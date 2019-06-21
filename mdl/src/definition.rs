@@ -1,4 +1,7 @@
-use crate::{base::Interface, expression::ExpressionList, itype::TypeList, value::ValueList};
+use crate::{
+    base::Interface, expression::ExpressionList, itype::TypeList,
+    value::ValueList,
+};
 
 pub trait Definition {
     fn get_parameter_count(&self) -> usize;

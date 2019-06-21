@@ -3,9 +3,6 @@ use mdl_sys as sys;
 pub use sys::Kind;
 
 use std::ffi::{CStr, CString};
-use std::path::Path;
-
-use err_derive::Error;
 
 type Result<T, E = Error> = std::result::Result<T, E>;
 
@@ -28,7 +25,7 @@ impl Clone for Type {
 
 pub trait TypeBase {
     fn get_kind(&self) -> Kind {
-        unsafe { sys::IType_get_kind(self._ptr())}
+        unsafe { sys::IType_get_kind(self._ptr()) }
     }
 
     fn _ptr(&self) -> sys::IType;
@@ -75,7 +72,8 @@ impl TypeList {
 
     pub fn get_index(&self, name: &str) -> Option<usize> {
         let cname = CString::new(name).unwrap();
-        let index = unsafe { sys::IType_list_get_index(self.ptr, cname.as_ptr()) };
+        let index =
+            unsafe { sys::IType_list_get_index(self.ptr, cname.as_ptr()) };
         if index == std::usize::MAX {
             None
         } else {
@@ -144,7 +142,9 @@ impl TypeFactory {
         if ptr.is_null() {
             None
         } else {
-            Some(unsafe { CStr::from_ptr(ptr).to_string_lossy().to_owned().to_string() })
+            Some(unsafe {
+                CStr::from_ptr(ptr).to_string_lossy().to_owned().to_string()
+            })
         }
     }
 }

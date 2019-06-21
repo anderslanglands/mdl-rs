@@ -1,6 +1,6 @@
 use crate::{
-    base::Interface, definition::Definition, expression::ExpressionList, itype::TypeList,
-    value::ValueList,
+    base::Interface, definition::Definition, expression::ExpressionList,
+    itype::TypeList, value::ValueList,
 };
 use mdl_sys as sys;
 
@@ -34,8 +34,12 @@ impl Definition for FunctionDefinition {
 
     fn get_parameter_index(&self, name: &str) -> Option<usize> {
         let name = CString::new(name).unwrap();
-        let index =
-            unsafe { sys::IFunction_definition_get_parameter_index(self.ptr, name.as_ptr()) };
+        let index = unsafe {
+            sys::IFunction_definition_get_parameter_index(
+                self.ptr,
+                name.as_ptr(),
+            )
+        };
         if index == std::usize::MAX {
             None
         } else {
@@ -44,16 +48,21 @@ impl Definition for FunctionDefinition {
     }
 
     fn get_parameter_name(&self, index: usize) -> Option<String> {
-        let ptr = unsafe { sys::IFunction_definition_get_parameter_name(self.ptr, index) };
+        let ptr = unsafe {
+            sys::IFunction_definition_get_parameter_name(self.ptr, index)
+        };
         if ptr.is_null() {
             None
         } else {
-            Some(unsafe { CStr::from_ptr(ptr).to_string_lossy().to_owned().to_string() })
+            Some(unsafe {
+                CStr::from_ptr(ptr).to_string_lossy().to_owned().to_string()
+            })
         }
     }
 
     fn get_parameter_types(&self) -> TypeList {
-        let ptr = unsafe { sys::IFunction_definition_get_parameter_types(self.ptr) };
+        let ptr =
+            unsafe { sys::IFunction_definition_get_parameter_types(self.ptr) };
         if ptr.is_null() {
             panic!("IFunction_definition_get_parameter_types returned NULL");
         }

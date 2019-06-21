@@ -26,6 +26,8 @@ pub mod function_definition;
 pub use function_definition::*;
 pub mod material_definition;
 pub use material_definition::*;
+pub mod material_instance;
+pub use material_instance::*;
 pub mod module;
 pub use module::*;
 pub mod interface;
@@ -40,6 +42,8 @@ pub mod expression;
 pub use expression::*;
 pub mod discovery;
 pub use discovery::*;
+pub mod compiled_material;
+pub use compiled_material::*;
 
 #[test]
 fn test_load_ineuray() {
@@ -59,33 +63,46 @@ fn test_load_ineuray() {
 
         println!("version: {}", version);
 
-        let mdl_compiler = ineuray_get_api_component_mdl_compiler(n);
+        let mdl_compiler =
+            ineuray_get_api_component(n, IMdl_compiler_type_get_iid())
+                as IMdlCompiler;
         assert!(!mdl_compiler.is_null());
 
         let module_path = CString::new("/home/anders").unwrap();
-        let result = IMdl_compiler_add_module_path(mdl_compiler, module_path.as_ptr());
+        let result =
+            IMdl_compiler_add_module_path(mdl_compiler, module_path.as_ptr());
         assert_eq!(result, AddPathResult::Success);
 
         // plugins must be loaded before neuray is started
-        let nvmdl_freeimage = format!("{}/lib/nv_freeimage.so", std::env::var("MDL_ROOT").unwrap());
+        let nvmdl_freeimage = format!(
+            "{}/lib/nv_freeimage.so",
+            std::env::var("MDL_ROOT").unwrap()
+        );
         let nvmdl_freeimage = CString::new(nvmdl_freeimage.as_str()).unwrap();
-        let result = IMdl_compiler_load_plugin_library(mdl_compiler, nvmdl_freeimage.as_ptr());
+        let result = IMdl_compiler_load_plugin_library(
+            mdl_compiler,
+            nvmdl_freeimage.as_ptr(),
+        );
         assert_eq!(result, BooleanResult::Success);
 
         // start neuray
         assert_eq!(ineuray_start(n), INeurayStartResult::Success);
 
         // get database and global scope
-        let database = ineuray_get_api_component_database(n);
+        let database =
+            ineuray_get_api_component(n, IDatabase_type_get_iid()) as IDatabase;
         assert!(!database.is_null());
         let global_scope = IDatabase_get_global_scope(database);
         assert!(!global_scope.is_null());
 
         // get mdl factory and create execution context
-        let mdl_factory = ineuray_get_api_component_mdl_factory(n);
+        let mdl_factory =
+            ineuray_get_api_component(n, IMdl_factory_type_get_iid())
+                as IMdlFactory;
         assert!(!mdl_factory.is_null());
 
-        let mdl_execution_context = IMdl_factory_create_execution_context(mdl_factory);
+        let mdl_execution_context =
+            IMdl_factory_create_execution_context(mdl_factory);
         assert!(!mdl_execution_context.is_null());
 
         // test set some options to their default values
@@ -131,20 +148,29 @@ fn test_load_ineuray() {
             SetOptionResult::WrongType,
         );
 
-        let cuda_be = IMdl_compiler_get_backend(mdl_compiler, MdlBackendKind::CudaPtx);
+        let cuda_be =
+            IMdl_compiler_get_backend(mdl_compiler, MdlBackendKind::CudaPtx);
         assert!(!cuda_be.is_null());
 
         let num_texture_spaces = CString::new("num_texture_spaces").unwrap();
         let one = CString::new("1").unwrap();
         assert_eq!(
-            IMdl_backend_set_option(cuda_be, num_texture_spaces.as_ptr(), one.as_ptr()),
+            IMdl_backend_set_option(
+                cuda_be,
+                num_texture_spaces.as_ptr(),
+                one.as_ptr()
+            ),
             BackendSetOptionResult::Success
         );
 
         let num_texture_results = CString::new("num_texture_results").unwrap();
         let one = CString::new("16").unwrap();
         assert_eq!(
-            IMdl_backend_set_option(cuda_be, num_texture_results.as_ptr(), one.as_ptr()),
+            IMdl_backend_set_option(
+                cuda_be,
+                num_texture_results.as_ptr(),
+                one.as_ptr()
+            ),
             BackendSetOptionResult::Success
         );
 
@@ -155,14 +181,20 @@ fn test_load_ineuray() {
             BackendSetOptionResult::Success
         );
 
-        let tex_lookup_call_mode = CString::new("tex_lookup_call_mode").unwrap();
+        let tex_lookup_call_mode =
+            CString::new("tex_lookup_call_mode").unwrap();
         let one = CString::new("optix_cp").unwrap();
         assert_eq!(
-            IMdl_backend_set_option(cuda_be, tex_lookup_call_mode.as_ptr(), one.as_ptr()),
+            IMdl_backend_set_option(
+                cuda_be,
+                tex_lookup_call_mode.as_ptr(),
+                one.as_ptr()
+            ),
             BackendSetOptionResult::Success
         );
 
-        let image_api = ineuray_get_api_component_image_api(n);
+        let image_api = ineuray_get_api_component(n, IImage_api_type_get_iid())
+            as IImageApi;
         assert!(!image_api.is_null());
 
         // release everything and shutdown neuray

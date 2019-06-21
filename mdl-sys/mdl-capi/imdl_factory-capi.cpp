@@ -9,10 +9,12 @@ typedef mi::neuraylib::IMdl_execution_context IMdl_execution_context;
 typedef mi::neuraylib::IType_factory IType_factory;
 typedef mi::neuraylib::IValue_factory IValue_factory;
 typedef mi::neuraylib::IExpression_factory IExpression_factory;
+typedef mi::base::Uuid Uuid;
 
 extern "C" {
 void IMdl_factory_release(IMdl_factory* f) { f->release(); }
 void IMdl_factory_retain(IMdl_factory* f) { f->retain(); }
+Uuid IMdl_factory_type_get_iid() { return IMdl_factory::IID(); }
 IMdl_execution_context* IMdl_factory_create_execution_context(IMdl_factory* f) {
     return f->create_execution_context();
 }

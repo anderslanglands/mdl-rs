@@ -6,6 +6,7 @@ typedef mi::base::Uuid Uuid;
 
 extern "C" {
 void IVersion_release(IVersion* i) { i->release(); }
+Uuid IVersion_type_get_iid() { return IVersion::IID(); }
 const char* IVersion_get_product_name(IVersion* i) {
     return i->get_product_name();
 }

@@ -21,24 +21,10 @@ pub type IFactory = *mut IFactory_api;
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct IImageApi_api {
-    _unused: [u8; 0],
-}
-pub type IImageApi = *mut IImageApi_api;
-
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct IMdlArchiveApi_api {
     _unused: [u8; 0],
 }
 pub type IMdlArchiveApi = *mut IMdlArchiveApi_api;
-
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct IMdlCompiler_api {
-    _unused: [u8; 0],
-}
-pub type IMdlCompiler = *mut IMdlCompiler_api;
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]

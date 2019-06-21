@@ -17,6 +17,7 @@ add_library(mdl-capi STATIC
     itransaction-capi.cpp
     ifunction_definition-capi.cpp
     imaterial_definition-capi.cpp
+    imaterial_instance-capi.cpp
     imodule-capi.cpp
     iinterface-capi.cpp
     itype_list-capi.cpp
@@ -24,6 +25,7 @@ add_library(mdl-capi STATIC
     ivalue-capi.cpp
     iexpression-capi.cpp
     imdl_discovery_api-capi.cpp
+    icompiled_material-capi.cpp
     )
 target_include_directories(mdl-capi PUBLIC ${INC_MDL})
 # target_link_libraries(mdl-capi PUBLIC)

@@ -1,9 +1,6 @@
 use mdl_sys as sys;
 
 use std::ffi::{CStr, CString};
-use std::path::Path;
-
-use err_derive::Error;
 
 type Result<T, E = Error> = std::result::Result<T, E>;
 
@@ -50,7 +47,9 @@ impl ExpressionList {
 
     pub fn get_index(&self, name: &str) -> Option<usize> {
         let cname = CString::new(name).unwrap();
-        let index = unsafe { sys::IExpression_list_get_index(self.ptr, cname.as_ptr()) };
+        let index = unsafe {
+            sys::IExpression_list_get_index(self.ptr, cname.as_ptr())
+        };
         if index == std::usize::MAX {
             None
         } else {
@@ -73,7 +72,8 @@ impl ExpressionList {
     }
 
     pub fn get_expression(&self, index: usize) -> Option<Expression> {
-        let ptr = unsafe { sys::IExpression_list_get_expression(self.ptr, index) };
+        let ptr =
+            unsafe { sys::IExpression_list_get_expression(self.ptr, index) };
         if ptr.is_null() {
             None
         } else {
@@ -83,7 +83,12 @@ impl ExpressionList {
 
     pub fn get_expression_by_name(&self, name: &str) -> Option<Expression> {
         let name = CString::new(name).unwrap();
-        let ptr = unsafe { sys::IExpression_list_get_expression_by_name(self.ptr, name.as_ptr()) };
+        let ptr = unsafe {
+            sys::IExpression_list_get_expression_by_name(
+                self.ptr,
+                name.as_ptr(),
+            )
+        };
         if ptr.is_null() {
             None
         } else {
@@ -123,18 +128,39 @@ pub struct ExpressionFactory {
 }
 
 impl ExpressionFactory {
-    pub fn dump(&self, t: &Expression, name: Option<&str>, depth: usize) -> Option<String> {
+    pub fn dump(
+        &self,
+        t: &Expression,
+        name: Option<&str>,
+        depth: usize,
+    ) -> Option<String> {
         let ptr = if let Some(name) = name {
             let name = CString::new(name).unwrap();
-            unsafe { sys::IExpression_factory_dump(self.ptr, t.ptr, name.as_ptr(), depth) }
+            unsafe {
+                sys::IExpression_factory_dump(
+                    self.ptr,
+                    t.ptr,
+                    name.as_ptr(),
+                    depth,
+                )
+            }
         } else {
-            unsafe { sys::IExpression_factory_dump(self.ptr, t.ptr, std::ptr::null(), depth) }
+            unsafe {
+                sys::IExpression_factory_dump(
+                    self.ptr,
+                    t.ptr,
+                    std::ptr::null(),
+                    depth,
+                )
+            }
         };
 
         if ptr.is_null() {
             None
         } else {
-            Some(unsafe { CStr::from_ptr(ptr).to_string_lossy().to_owned().to_string() })
+            Some(unsafe {
+                CStr::from_ptr(ptr).to_string_lossy().to_owned().to_string()
+            })
         }
     }
 }

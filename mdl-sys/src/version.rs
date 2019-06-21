@@ -4,6 +4,7 @@ use std::os::raw::c_char;
 
 extern "C" {
     pub fn IVersion_release(i: IVersion);
+    pub fn IVersion_type_get_iid() -> Uuid;
     pub fn IVersion_get_product_name(i: IVersion) -> *const c_char;
     pub fn IVersion_get_product_version(i: IVersion) -> *const c_char;
     pub fn IVersion_get_build_number(i: IVersion) -> *const c_char;
