@@ -69,14 +69,9 @@ impl Version {
 }
 
 impl Interface for Version {
-    fn from_interface(i: sys::IInterface) -> Version {
-        let i = unsafe { sys::IInterface_get_interface(i, Self::type_iid()) };
-        if i.is_null() {
-            panic!("Tried to convert from null interface");
-        }
-
+    fn from_interface_ptr(ptr: sys::IInterface) -> Version {
         Version {
-            ptr: i as *mut sys::IVersion_api,
+            ptr: ptr as sys::IVersion,
         }
     }
 

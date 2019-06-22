@@ -1,4 +1,8 @@
-use crate::{base::Interface, itype::{TypeList, TypeResource}, value::ValueList};
+use crate::{
+    base::Interface,
+    itype::{TypeList, TypeResource},
+    value::ValueList,
+};
 use mdl_sys as sys;
 
 use std::ffi::CStr;
@@ -86,14 +90,16 @@ impl Module {
 
     pub fn get_function(&self, index: usize) -> Option<String> {
         unsafe {
-            let ptr =sys::IModule_get_function(self.ptr, index);
+            let ptr = sys::IModule_get_function(self.ptr, index);
             if ptr.is_null() {
                 None
             } else {
-                Some(CStr::from_ptr(ptr)
-                    .to_string_lossy()
-                    .to_owned()
-                    .to_string())
+                Some(
+                    CStr::from_ptr(ptr)
+                        .to_string_lossy()
+                        .to_owned()
+                        .to_string(),
+                )
             }
         }
     }
@@ -116,10 +122,12 @@ impl Module {
             if ptr.is_null() {
                 None
             } else {
-                Some(CStr::from_ptr(ptr)
-                    .to_string_lossy()
-                    .to_owned()
-                    .to_string())
+                Some(
+                    CStr::from_ptr(ptr)
+                        .to_string_lossy()
+                        .to_owned()
+                        .to_string(),
+                )
             }
         }
     }
@@ -142,7 +150,12 @@ impl Module {
             if ptr.is_null() {
                 None
             } else {
-                Some(CStr::from_ptr(ptr).to_string_lossy().to_owned().to_string())
+                Some(
+                    CStr::from_ptr(ptr)
+                        .to_string_lossy()
+                        .to_owned()
+                        .to_string(),
+                )
             }
         }
     }
@@ -153,7 +166,12 @@ impl Module {
             if ptr.is_null() {
                 None
             } else {
-                Some(CStr::from_ptr(ptr).to_string_lossy().to_owned().to_string())
+                Some(
+                    CStr::from_ptr(ptr)
+                        .to_string_lossy()
+                        .to_owned()
+                        .to_string(),
+                )
             }
         }
     }
@@ -164,7 +182,7 @@ impl Module {
             if ptr.is_null() {
                 None
             } else {
-                Some(TypeResource{ptr})
+                Some(TypeResource { ptr })
             }
         }
     }
@@ -273,14 +291,9 @@ impl<'a> Iterator for MaterialIterator<'a> {
 }
 
 impl Interface for Module {
-    fn from_interface(i: sys::IInterface) -> Module {
-        let i = unsafe { sys::IInterface_get_interface(i, Self::type_iid()) };
-        if i.is_null() {
-            panic!("Tried to convert from null interface");
-        }
-
+    fn from_interface_ptr(ptr: sys::IInterface) -> Module {
         Module {
-            ptr: i as *mut sys::IModule_api,
+            ptr: ptr as sys::IModule,
         }
     }
 

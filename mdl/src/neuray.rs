@@ -38,7 +38,11 @@ impl Neuray {
         if ptr.is_null() {
             return Err(Error::GetApiComponentFailed);
         }
-        Ok(C::from_interface(ptr))
+        let ptr = unsafe { sys::IInterface_get_interface(ptr, C::type_iid()) };
+        if ptr.is_null() {
+            panic!("Tried to convert from null interface");
+        }
+        Ok(C::from_interface_ptr(ptr))
     }
 }
 

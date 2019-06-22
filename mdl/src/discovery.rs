@@ -17,14 +17,9 @@ impl MdlInfo for MdlInfoBase {
 }
 
 impl Interface for MdlInfoBase {
-    fn from_interface(i: sys::IInterface) -> MdlInfoBase {
-        let i = unsafe { sys::IInterface_get_interface(i, Self::type_iid()) };
-        if i.is_null() {
-            panic!("Tried to convert from null interface");
-        }
-
+    fn from_interface_ptr(ptr: sys::IInterface) -> MdlInfoBase {
         MdlInfoBase {
-            ptr: i as *mut sys::IMdlInfo_api,
+            ptr: ptr as sys::IMdlInfo,
         }
     }
 
@@ -124,14 +119,9 @@ impl MdlInfo for MdlModuleInfo {
 }
 
 impl Interface for MdlModuleInfo {
-    fn from_interface(i: sys::IInterface) -> MdlModuleInfo {
-        let i = unsafe { sys::IInterface_get_interface(i, Self::type_iid()) };
-        if i.is_null() {
-            panic!("Tried to convert from null interface");
-        }
-
+    fn from_interface_ptr(ptr: sys::IInterface) -> MdlModuleInfo {
         MdlModuleInfo {
-            ptr: i as *mut sys::IMdlModuleInfo_api,
+            ptr: ptr as sys::IMdlModuleInfo,
         }
     }
 
@@ -179,14 +169,9 @@ impl MdlXliffInfo {
 }
 
 impl Interface for MdlXliffInfo {
-    fn from_interface(i: sys::IInterface) -> MdlXliffInfo {
-        let i = unsafe { sys::IInterface_get_interface(i, Self::type_iid()) };
-        if i.is_null() {
-            panic!("Tried to convert from null interface");
-        }
-
+    fn from_interface_ptr(ptr: sys::IInterface) -> MdlXliffInfo {
         MdlXliffInfo {
-            ptr: i as *mut sys::IMdlXliffInfo_api,
+            ptr: ptr as sys::IMdlXliffInfo,
         }
     }
 
@@ -221,14 +206,9 @@ impl MdlDiscoveryApi {
 }
 
 impl Interface for MdlDiscoveryApi {
-    fn from_interface(i: sys::IInterface) -> MdlDiscoveryApi {
-        let i = unsafe { sys::IInterface_get_interface(i, Self::type_iid()) };
-        if i.is_null() {
-            panic!("Tried to convert from null interface");
-        }
-
+    fn from_interface_ptr(ptr: sys::IInterface) -> MdlDiscoveryApi {
         MdlDiscoveryApi {
-            ptr: i as *mut sys::discovery::IMdlDiscoveryApi_api,
+            ptr: ptr as sys::discovery::IMdlDiscoveryApi,
         }
     }
 
@@ -341,14 +321,9 @@ impl MdlInfo for MdlPackageInfo {
 }
 
 impl Interface for MdlPackageInfo {
-    fn from_interface(i: sys::IInterface) -> MdlPackageInfo {
-        let i = unsafe { sys::IInterface_get_interface(i, Self::type_iid()) };
-        if i.is_null() {
-            panic!("Tried to convert from null interface");
-        }
-
+    fn from_interface_ptr(ptr: sys::IInterface) -> MdlPackageInfo {
         MdlPackageInfo {
-            ptr: i as *mut sys::IMdlPackageInfo_api,
+            ptr: ptr as sys::IMdlPackageInfo,
         }
     }
 
@@ -429,14 +404,9 @@ impl MdlInfo for MdlResourceInfo {
 }
 
 impl Interface for MdlResourceInfo {
-    fn from_interface(i: sys::IInterface) -> MdlResourceInfo {
-        let i = unsafe { sys::IInterface_get_interface(i, Self::type_iid()) };
-        if i.is_null() {
-            panic!("Tried to convert from null interface");
-        }
-
+    fn from_interface_ptr(ptr: sys::IInterface) -> MdlResourceInfo {
         MdlResourceInfo {
-            ptr: i as *mut sys::IMdlResourceInfo_api,
+            ptr: ptr as sys::IMdlResourceInfo,
         }
     }
 
@@ -516,14 +486,9 @@ impl MdlInfo for MdlTextureInfo {
 }
 
 impl Interface for MdlTextureInfo {
-    fn from_interface(i: sys::IInterface) -> MdlTextureInfo {
-        let i = unsafe { sys::IInterface_get_interface(i, Self::type_iid()) };
-        if i.is_null() {
-            panic!("Tried to convert from null interface");
-        }
-
+    fn from_interface_ptr(ptr: sys::IInterface) -> MdlTextureInfo {
         MdlTextureInfo {
-            ptr: i as *mut sys::IMdlTextureInfo_api,
+            ptr: ptr as sys::IMdlTextureInfo,
         }
     }
 
@@ -607,14 +572,9 @@ impl MdlInfo for MdlLightProfileInfo {
 }
 
 impl Interface for MdlLightProfileInfo {
-    fn from_interface(i: sys::IInterface) -> MdlLightProfileInfo {
-        let i = unsafe { sys::IInterface_get_interface(i, Self::type_iid()) };
-        if i.is_null() {
-            panic!("Tried to convert from null interface");
-        }
-
+    fn from_interface_ptr(ptr: sys::IInterface) -> MdlLightProfileInfo {
         MdlLightProfileInfo {
-            ptr: i as *mut sys::IMdlLightProfileInfo_api,
+            ptr: ptr as sys::IMdlLightProfileInfo,
         }
     }
 
@@ -698,14 +658,9 @@ impl MdlInfo for MdlMeasuredBsdfInfo {
 }
 
 impl Interface for MdlMeasuredBsdfInfo {
-    fn from_interface(i: sys::IInterface) -> MdlMeasuredBsdfInfo {
-        let i = unsafe { sys::IInterface_get_interface(i, Self::type_iid()) };
-        if i.is_null() {
-            panic!("Tried to convert from null interface");
-        }
-
+    fn from_interface_ptr(ptr: sys::IInterface) -> MdlMeasuredBsdfInfo {
         MdlMeasuredBsdfInfo {
-            ptr: i as *mut sys::IMdlMeasuredBsdfInfo_api,
+            ptr: ptr as sys::IMdlMeasuredBsdfInfo,
         }
     }
 

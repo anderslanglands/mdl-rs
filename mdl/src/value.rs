@@ -1,7 +1,10 @@
 use mdl_sys as sys;
 
+use crate::base::Interface;
+
 use std::ffi::{CStr, CString};
 
+pub use sys::value::ValueKind;
 
 type Result<T, E = Error> = std::result::Result<T, E>;
 
@@ -22,7 +25,27 @@ impl Clone for Value {
     }
 }
 
-impl Value {}
+impl Value {
+    pub fn get_kind(&self) -> ValueKind {
+        unsafe { sys::IValue_get_kind(self.ptr) }
+    }
+}
+
+impl Interface for Value {
+    fn to_interface(&self) -> sys::IInterface {
+        self.ptr as *mut sys::IInterface_api
+    }
+
+    fn from_interface_ptr(ptr: sys::IInterface) -> Value {
+        Value {
+            ptr: ptr as sys::IValue,
+        }
+    }
+
+    fn type_iid() -> sys::Uuid {
+        unsafe { sys::IValue_type_get_iid() }
+    }
+}
 
 pub struct ValueList {
     pub(crate) ptr: sys::IValueList,
@@ -89,6 +112,22 @@ impl ValueList {
     }
 }
 
+impl Interface for ValueList {
+    fn to_interface(&self) -> sys::IInterface {
+        self.ptr as *mut sys::IInterface_api
+    }
+
+    fn from_interface_ptr(ptr: sys::IInterface) -> ValueList {
+        ValueList {
+            ptr: ptr as sys::IValueList,
+        }
+    }
+
+    fn type_iid() -> sys::Uuid {
+        unsafe { sys::IValue_list_type_get_iid() }
+    }
+}
+
 pub struct ValueListIterator<'a> {
     value_list: &'a ValueList,
     current: usize,
@@ -104,6 +143,54 @@ impl<'a> Iterator for ValueListIterator<'a> {
         } else {
             None
         }
+    }
+}
+
+pub struct ValueCompound {
+    pub(crate) ptr: sys::IValueCompound,
+}
+
+impl Drop for ValueCompound {
+    fn drop(&mut self) {
+        unsafe { sys::IValue_compound_release(self.ptr) };
+    }
+}
+
+impl Clone for ValueCompound {
+    fn clone(&self) -> ValueCompound {
+        unsafe { sys::IValue_compound_retain(self.ptr) };
+        ValueCompound { ptr: self.ptr }
+    }
+}
+
+impl ValueCompound {
+    pub fn get_size(&self) -> usize {
+        unsafe { sys::IValue_compound_get_size(self.ptr) }
+    }
+
+    pub fn get_value(&self, index: usize) -> Option<Value> {
+        let ptr = unsafe { sys::IValue_compound_get_value(self.ptr, index) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(Value { ptr })
+        }
+    }
+}
+
+impl Interface for ValueCompound {
+    fn to_interface(&self) -> sys::IInterface {
+        self.ptr as *mut sys::IInterface_api
+    }
+
+    fn from_interface_ptr(ptr: sys::IInterface) -> ValueCompound {
+        ValueCompound {
+            ptr: ptr as sys::IValueCompound,
+        }
+    }
+
+    fn type_iid() -> sys::Uuid {
+        unsafe { sys::IValue_compound_type_get_iid() }
     }
 }
 

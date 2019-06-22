@@ -215,17 +215,9 @@ impl<'a> Iterator for ErrorMessageIterator<'a> {
 }
 
 impl Interface for MdlExecutionContext {
-    fn from_interface(i: sys::IInterface) -> MdlExecutionContext {
-        let ptr = unsafe { sys::IInterface_get_interface(i, Self::type_iid()) };
-        if ptr.is_null() {
-            panic!("Tried to convert from null interface");
-        }
-
-        // We rlease the original pointer
-        unsafe { sys::IInterface_release(i) };
-
+    fn from_interface_ptr(ptr: sys::IInterface) -> MdlExecutionContext {
         MdlExecutionContext {
-            ptr: ptr as *mut sys::IMdlExecutionContext_api,
+            ptr: ptr as sys::IMdlExecutionContext,
         }
     }
 
@@ -322,17 +314,9 @@ impl<'a> Iterator for NoteIterator<'a> {
 
 
 impl Interface for Message {
-    fn from_interface(i: sys::IInterface) -> Message {
-        let ptr = unsafe { sys::IInterface_get_interface(i, Self::type_iid()) };
-        if ptr.is_null() {
-            panic!("Tried to convert from null interface");
-        }
-
-        // We rlease the original pointer
-        unsafe { sys::IInterface_release(i) };
-
+    fn from_interface_ptr(ptr: sys::IInterface) -> Message {
         Message {
-            ptr: ptr as *mut sys::IMessage_api,
+            ptr: ptr as sys::IMessage,
         }
     }
 

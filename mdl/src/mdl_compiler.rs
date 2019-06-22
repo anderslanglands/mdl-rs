@@ -116,14 +116,9 @@ impl MdlCompiler {
 }
 
 impl Interface for MdlCompiler {
-    fn from_interface(i: sys::IInterface) -> MdlCompiler {
-        let i = unsafe { sys::IInterface_get_interface(i, Self::type_iid()) };
-        if i.is_null() {
-            panic!("Tried to convert from null interface");
-        }
-
+    fn from_interface_ptr(ptr: sys::IInterface) -> MdlCompiler {
         MdlCompiler {
-            ptr: i as *mut sys::IMdlCompiler_api,
+            ptr: ptr as sys::IMdlCompiler,
         }
     }
 
@@ -193,14 +188,9 @@ impl MdlBackend {
 }
 
 impl Interface for MdlBackend {
-    fn from_interface(i: sys::IInterface) -> MdlBackend {
-        let i = unsafe { sys::IInterface_get_interface(i, Self::type_iid()) };
-        if i.is_null() {
-            panic!("Tried to convert from null interface");
-        }
-
+    fn from_interface_ptr(ptr: sys::IInterface) -> MdlBackend {
         MdlBackend {
-            ptr: i as *mut sys::IMdlBackend_api,
+            ptr: ptr as sys::IMdlBackend,
         }
     }
 
@@ -247,17 +237,9 @@ impl TargetCode {
 }
 
 impl Interface for TargetCode {
-    fn from_interface(i: sys::IInterface) -> TargetCode {
-        let ptr = unsafe { sys::IInterface_get_interface(i, Self::type_iid()) };
-        if ptr.is_null() {
-            panic!("Tried to convert from null interface");
-        }
-
-        // We rlease the original pointer
-        unsafe { sys::IInterface_release(i) };
-
+    fn from_interface_ptr(ptr: sys::IInterface) -> TargetCode {
         TargetCode {
-            ptr: ptr as *mut sys::ITargetCode_api,
+            ptr: ptr as sys::ITargetCode,
         }
     }
 

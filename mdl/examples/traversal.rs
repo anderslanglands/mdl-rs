@@ -2,6 +2,8 @@ use mdl::base::Interface;
 use mdl::*;
 type Result<T, E = mdl::Error> = std::result::Result<T, E>;
 
+use std::collections::HashSet;
+
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
@@ -89,7 +91,213 @@ pub fn main() {
                         }
                     };
 
+                let material_instance =
+                    MaterialInstance::from_interface(material_instance_se);
+
+                // compile the material instance
+                let compiled_material = material_instance
+                    .create_compiled_material(
+                        CompilationOptions::CLASS_COMPILATION,
+                        None,
+                    );
+
+                let compiled_material = match compiled_material {
+                    Some(m) => m,
+                    None => {
+                        println!("Could not create compiled instance from material '{}'", material_name);
+                        continue;
+                    }
+                };
+
+                let mut context = Context {
+                    transaction: &transaction,
+                    compiler: &mdl_compiler,
+                    indent: 0,
+                    imports: HashSet::new(),
+                    used_modules: HashSet::new(),
+                    used_resources: HashSet::new(),
+                };
+
+                traverse(&compiled_material, &mut context);
+
             }
+        }
+    }
+}
+
+pub struct Context<'a> {
+    pub transaction: &'a Transaction,
+    pub compiler: &'a MdlCompiler,
+    pub indent: usize,
+    pub imports: HashSet<String>,
+    pub used_modules: HashSet<String>,
+    pub used_resources: HashSet<String>,
+}
+
+pub enum Element {
+    Parameter(Value),
+    Value(Value),
+    Expression(Expression),
+    Temporary(Expression),
+}
+
+pub struct TraversalElement {
+    element: Element,
+    sibling_count: usize,
+    sibling_index: usize,
+}
+
+pub fn traverse(material: &CompiledMaterial, context: &mut Context) {
+    let body = material.get_body();
+
+    let param_count = material.get_parameter_count();
+    println!("// BEGIN parameters");
+    for i in 0..param_count {
+        if let Some(arg) = material.get_argument(i) {
+            let tel = TraversalElement {
+                element: Element::Parameter(arg),
+                sibling_count: 1,
+                sibling_index: 0,
+            };
+            if let Some(name) = material.get_parameter_name(i) {
+                println!("Traversing argument {}: {}", i, name);
+            } else {
+                println!("Traversing argument {}", i);
+            }
+            traverse_element(material, tel, context);
+        }
+    }
+    println!("// END parameters");
+
+    let temp_count = material.get_temporary_count();
+    println!("// BEGIN temporarys");
+    for i in 0..temp_count {
+        if let Some(arg) = material.get_temporary(i) {
+            let tel = TraversalElement {
+                element: Element::Temporary(arg),
+                sibling_count: 1,
+                sibling_index: 0,
+            };
+            println!("Traversing temporary {}", i);
+            traverse_element(material, tel, context);
+        }
+    }
+    println!("// END temporarys");
+
+    println!("// BEGIN body");
+    traverse_element(
+        material,
+        TraversalElement {
+            element: Element::Expression(Expression::from_interface(body)),
+            sibling_count: 1,
+            sibling_index: 0,
+        },
+        context,
+    );
+    println!("// END body");
+}
+
+pub fn traverse_element(
+    material: &CompiledMaterial,
+    element: TraversalElement,
+    context: &mut Context,
+) {
+    match element.element {
+        Element::Expression(expression) => match expression.get_kind() {
+            ExpressionKind::Constant => {
+                let expr_const = ExpressionConstant::from_interface(expression);
+                let value = expr_const.get_value();
+                traverse_element(
+                    material,
+                    TraversalElement {
+                        element: Element::Value(value),
+                        sibling_count: 1,
+                        sibling_index: 0,
+                    },
+                    context,
+                );
+            }
+            ExpressionKind::DirectCall => {
+                let expr_dcall =
+                    ExpressionDirectCall::from_interface(expression);
+                let arguments = expr_dcall.get_arguments();
+                for i in 0..arguments.get_size() {
+                    let expr = arguments.get_expression(i).unwrap();
+                    // visit child...
+                    traverse_element(
+                        material,
+                        TraversalElement {
+                            element: Element::Expression(expr),
+                            sibling_count: arguments.get_size(),
+                            sibling_index: i,
+                        },
+                        context,
+                    );
+                }
+            }
+            ExpressionKind::Parameter => {
+                // print parameter name
+                let expr_param =
+                    ExpressionParameter::from_interface(expression);
+                let index = expr_param.get_index();
+                let name = material.get_parameter_name(index).unwrap();
+                println!("{} //< param", name);
+            }
+            ExpressionKind::Temporary => {
+                let expr_temp = ExpressionTemporary::from_interface(expression);
+                let index = expr_temp.get_index();
+                println!("temporary_{}", index);
+            }
+            _ => (),
+        },
+        Element::Value(value) => {
+            match value.get_kind() {
+                ValueKind::Vector
+                | ValueKind::Matrix
+                | ValueKind::Color
+                | ValueKind::Array
+                | ValueKind::Struct => {
+                    let value_compound = ValueCompound::from_interface(value);
+                    let size = value_compound.get_size();
+                    for i in 0..size {
+                        let compound_element =
+                            value_compound.get_value(i).unwrap();
+                        // visit child...
+                        traverse_element(
+                            material,
+                            TraversalElement {
+                                element: Element::Value(compound_element),
+                                sibling_count: size,
+                                sibling_index: i,
+                            },
+                            context,
+                        );
+                    }
+                }
+                _ => (), // nothhing to do for the others
+            }
+        }
+        Element::Parameter(parameter) => {
+            traverse_element(
+                material,
+                TraversalElement {
+                    element: Element::Value(parameter),
+                    sibling_count: 1,
+                    sibling_index: 0,
+                },
+                context,
+            );
+        }
+        Element::Temporary(expression) => {
+            traverse_element(
+                material,
+                TraversalElement {
+                    element: Element::Expression(expression),
+                    sibling_count: 1,
+                    sibling_index: 0,
+                },
+                context,
+            );
         }
     }
 }

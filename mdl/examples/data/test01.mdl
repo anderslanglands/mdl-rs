@@ -6,10 +6,53 @@ import base::*;
 import math::*;
 import tex::*;
 
-export material red() = material(
+export material diffuse(
+    color tint = color(0.3, 0.03, 0.05)
+    ) = material(
     surface: material_surface (
         scattering: df::diffuse_reflection_bsdf (
-            tint: color(0.3, 0.03, 0.05)
+            tint: tint
+        )
+    )
+);
+
+export material glossy_reflection (
+    color tint = color(0.6),
+    float roughness_u = 0.3
+) = material (
+    surface: material_surface (
+      scattering: df::simple_glossy_bsdf (
+        tint: tint,
+        roughness_u: roughness_u,
+        mode: df::scatter_reflect 
+        )
+    )
+);
+
+export material layered (
+    color diffuse_tint = color(0.3, 0.03, 0.05),
+    color glossy_tint = color(0.6),
+    float glossy_weight = 0.5,
+    float roughness_u = 0.3
+) = 
+
+let {
+    bsdf glossy = df::simple_glossy_bsdf (
+        tint: glossy_tint,
+        roughness_u: roughness_u,
+        mode: df::scatter_reflect 
+    );
+    bsdf diffuse = df::diffuse_reflection_bsdf (
+        tint: diffuse_tint
+    );
+}
+in
+material (
+    surface: material_surface (
+      scattering: df::weighted_layer (
+          weight: glossy_weight,
+          layer: glossy,
+          base: diffuse
         )
     )
 );

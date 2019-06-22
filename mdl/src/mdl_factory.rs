@@ -79,14 +79,9 @@ impl MdlFactory {
 }
 
 impl Interface for MdlFactory {
-    fn from_interface(i: sys::IInterface) -> MdlFactory {
-        let i = unsafe { sys::IInterface_get_interface(i, Self::type_iid()) };
-        if i.is_null() {
-            panic!("Tried to convert from null interface");
-        }
-
+    fn from_interface_ptr(ptr: sys::IInterface) -> MdlFactory {
         MdlFactory {
-            ptr: i as *mut sys::IMdlFactory_api,
+            ptr: ptr as sys::IMdlFactory,
         }
     }
 

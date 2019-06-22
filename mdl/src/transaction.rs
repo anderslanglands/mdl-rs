@@ -35,14 +35,21 @@ impl Transaction {
                 name: name.to_string(),
             })
         } else {
-            Ok(T::from_interface(ptr))
+            let ptr =
+                unsafe { sys::IInterface_get_interface(ptr, T::type_iid()) };
+            if ptr.is_null() {
+                panic!("Tried to convert from null interface");
+            }
+            Ok(T::from_interface_ptr(ptr))
         }
     }
 
     pub fn commit(&self) -> Result<()> {
         match unsafe { sys::ITransaction_commit(self.ptr) } {
             sys::TransactionCommitResult::Success => Ok(()),
-            sys::TransactionCommitResult::UnspecifiedFailure => Err(Error::UnspecifiedFailure),
+            sys::TransactionCommitResult::UnspecifiedFailure => {
+                Err(Error::UnspecifiedFailure)
+            }
             sys::TransactionCommitResult::TransactionAlreadyClosed => {
                 Err(Error::TransactionAlreadyClosed)
             }

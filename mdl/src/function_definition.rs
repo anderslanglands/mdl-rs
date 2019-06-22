@@ -79,17 +79,9 @@ impl Definition for FunctionDefinition {
 }
 
 impl Interface for FunctionDefinition {
-    fn from_interface(i: sys::IInterface) -> FunctionDefinition {
-        let ptr = unsafe { sys::IInterface_get_interface(i, Self::type_iid()) };
-        if ptr.is_null() {
-            panic!("Tried to convert from null interface");
-        }
-
-        // We rlease the original pointer
-        unsafe { sys::IInterface_release(i) };
-
+    fn from_interface_ptr(ptr: sys::IInterface) -> FunctionDefinition {
         FunctionDefinition {
-            ptr: ptr as *mut sys::IFunctionDefinition_api,
+            ptr: ptr as sys::IFunctionDefinition,
         }
     }
 

@@ -1,5 +1,7 @@
 use std::os::raw::c_char;
 
+use crate::base::Uuid;
+
 #[derive(Debug)]
 #[repr(u32)]
 pub enum ElementType {
@@ -37,3 +39,11 @@ pub struct ISceneElement_api {
     _unused: [u8; 0],
 }
 pub type ISceneElement = *mut ISceneElement_api;
+
+extern "C" {
+    pub fn IScene_element_release(s: ISceneElement);
+    pub fn IScene_element_retain(s: ISceneElement);
+    pub fn IScene_element_compare_iid(id: Uuid) -> bool;
+    pub fn IScene_element_type_get_iid() -> Uuid;
+    pub fn IScene_element_get_element_type(se: ISceneElement) -> ElementType;
+}

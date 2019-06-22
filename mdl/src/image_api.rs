@@ -22,14 +22,9 @@ impl Clone for ImageApi {
 impl ImageApi {}
 
 impl Interface for ImageApi {
-    fn from_interface(i: sys::IInterface) -> ImageApi {
-        let i = unsafe { sys::IInterface_get_interface(i, Self::type_iid()) };
-        if i.is_null() {
-            panic!("Tried to convert from null interface");
-        }
-
+    fn from_interface_ptr(ptr: sys::IInterface) -> ImageApi {
         ImageApi {
-            ptr: i as *mut sys::IImageApi_api,
+            ptr: ptr as sys::IImageApi,
         }
     }
 

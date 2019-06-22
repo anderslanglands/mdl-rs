@@ -22,15 +22,19 @@ pub mod base;
 pub mod itype;
 pub use itype::{Type, TypeBase, TypeFactory, TypeList, TypeResource};
 pub mod value;
-pub use value::{Value, ValueFactory, ValueList};
+pub use value::{Value, ValueCompound, ValueFactory, ValueKind, ValueList};
 pub mod expression;
-pub use expression::{Expression, ExpressionFactory, ExpressionList};
+pub use expression::{
+    Expression, ExpressionCall, ExpressionConstant, ExpressionDirectCall,
+    ExpressionFactory, ExpressionKind, ExpressionList, ExpressionParameter,
+    ExpressionTemporary,
+};
 pub mod function_definition;
 pub use function_definition::FunctionDefinition;
 pub mod material_definition;
 pub use material_definition::MaterialDefinition;
 pub mod material_instance;
-pub use material_instance::MaterialInstance;
+pub use material_instance::{CompilationOptions, MaterialInstance};
 pub mod definition;
 pub use definition::Definition;
 pub mod discovery;

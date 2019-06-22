@@ -57,22 +57,14 @@ impl MaterialInstance {
 }
 
 impl Interface for MaterialInstance {
-    fn from_interface(i: sys::IInterface) -> MaterialInstance {
-        let ptr = unsafe { sys::IInterface_get_interface(i, Self::type_iid()) };
-        if ptr.is_null() {
-            panic!("Tried to convert from null interface");
-        }
-
-        // We rlease the original pointer
-        unsafe { sys::IInterface_release(i) };
-
-        MaterialInstance {
-            ptr: ptr as *mut sys::IMaterialInstance_api,
-        }
-    }
-
     fn to_interface(&self) -> sys::IInterface {
         self.ptr as *mut sys::IInterface_api
+    }
+
+    fn from_interface_ptr(ptr: sys::IInterface) -> MaterialInstance {
+        MaterialInstance {
+            ptr: ptr as sys::IMaterialInstance,
+        }
     }
 
     fn type_iid() -> sys::Uuid {
