@@ -4,6 +4,8 @@ use crate::{
 };
 use mdl_sys as sys;
 
+pub use sys::FunctionDefinitionSemantics;
+
 use std::ffi::{CStr, CString};
 
 type Result<T, E = Error> = std::result::Result<T, E>;
@@ -91,6 +93,21 @@ impl Interface for FunctionDefinition {
 
     fn type_iid() -> sys::Uuid {
         unsafe { sys::IFunction_definition_type_get_iid() }
+    }
+}
+
+impl FunctionDefinition {
+    pub fn get_mdl_name(&self) -> String {
+        let ptr = unsafe { sys::IFunction_definition_get_mdl_name(self.ptr) };
+        if ptr.is_null() {
+            panic!("IFunction_definition_get_mdl_name returned NULL");
+        }
+
+        unsafe { CStr::from_ptr(ptr).to_str().unwrap().to_string() }
+    }
+
+    pub fn get_semantic(&self) -> FunctionDefinitionSemantics {
+        unsafe { sys::IFunction_definition_get_semantic(self.ptr) }
     }
 }
 

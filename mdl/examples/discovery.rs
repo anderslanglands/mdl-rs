@@ -84,7 +84,7 @@ fn log_api_package<I: MdlInfo>(info: &I, level: usize) {
 
     match info.get_kind() {
         MdlInfoKind::Xliff => {
-            let info = MdlXliffInfo::from_interface(info.to_interface());
+            let info = MdlXliffInfo::from_interface(info);
             log_default_attributes(
                 level,
                 info.get_search_path_index(),
@@ -94,7 +94,7 @@ fn log_api_package<I: MdlInfo>(info: &I, level: usize) {
             );
         }
         MdlInfoKind::Texture => {
-            let info = MdlTextureInfo::from_interface(info.to_interface());
+            let info = MdlTextureInfo::from_interface(info);
             log_default_attributes(
                 level,
                 info.get_search_path_index(),
@@ -104,7 +104,7 @@ fn log_api_package<I: MdlInfo>(info: &I, level: usize) {
             );
         }
         MdlInfoKind::LightProfile => {
-            let info = MdlLightProfileInfo::from_interface(info.to_interface());
+            let info = MdlLightProfileInfo::from_interface(info);
             log_default_attributes(
                 level,
                 info.get_search_path_index(),
@@ -114,7 +114,7 @@ fn log_api_package<I: MdlInfo>(info: &I, level: usize) {
             );
         }
         MdlInfoKind::MeasuredBsdf => {
-            let info = MdlMeasuredBsdfInfo::from_interface(info.to_interface());
+            let info = MdlMeasuredBsdfInfo::from_interface(info);
             log_default_attributes(
                 level,
                 info.get_search_path_index(),
@@ -124,7 +124,7 @@ fn log_api_package<I: MdlInfo>(info: &I, level: usize) {
             );
         }
         MdlInfoKind::Module => {
-            let info = MdlModuleInfo::from_interface(info.to_interface());
+            let info = MdlModuleInfo::from_interface(info);
             log_default_attributes(
                 level,
                 info.get_search_path_index(),
@@ -134,7 +134,7 @@ fn log_api_package<I: MdlInfo>(info: &I, level: usize) {
             );
         }
         MdlInfoKind::Package | MdlInfoKind::Directory => {
-            let info = MdlPackageInfo::from_interface(info.to_interface());
+            let info = MdlPackageInfo::from_interface(info);
             let spi_count = info.get_search_path_index_count();
             if spi_count > 0 {
                 println!(
@@ -164,9 +164,8 @@ fn log_api_package<I: MdlInfo>(info: &I, level: usize) {
             );
 
             for c in 0..child_count {
-                let child = MdlInfoBase::from_interface(
-                    info.get_child(c).unwrap().to_interface(),
-                );
+                let child =
+                    MdlInfoBase::from_interface(info.get_child(c).unwrap());
                 log_api_package(&child, level + 1);
             }
         }

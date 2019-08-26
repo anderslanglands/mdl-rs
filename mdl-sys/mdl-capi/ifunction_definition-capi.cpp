@@ -3,6 +3,8 @@
 #include <mi/neuraylib/ifunction_definition.h>
 
 typedef mi::neuraylib::IFunction_definition IFunction_definition;
+typedef mi::neuraylib::IFunction_definition::Semantics
+    IFunction_definition_Semantics;
 typedef mi::neuraylib::IExpression_list IExpression_list;
 typedef mi::neuraylib::IType_list IType_list;
 typedef mi::base::Uuid Uuid;
@@ -33,5 +35,12 @@ const char* IFunction_definition_get_parameter_name(IFunction_definition* t,
 usize IFunction_definition_get_parameter_index(IFunction_definition* t,
                                                const char* name) {
     return t->get_parameter_index(name);
+}
+const char* IFunction_definition_get_mdl_name(IFunction_definition* t) {
+    return t->get_mdl_name();
+}
+IFunction_definition_Semantics
+IFunction_definition_get_semantic(IFunction_definition* i) {
+    return i->get_semantic();
 }
 }

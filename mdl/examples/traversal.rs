@@ -119,7 +119,6 @@ pub fn main() {
                 };
 
                 traverse(&compiled_material, &mut context);
-
             }
         }
     }
@@ -195,6 +194,7 @@ pub fn traverse(material: &CompiledMaterial, context: &mut Context) {
         context,
     );
     println!("// END body");
+
 }
 
 pub fn traverse_element(
@@ -202,6 +202,8 @@ pub fn traverse_element(
     element: TraversalElement,
     context: &mut Context,
 ) {
+    context.indent += 1;
+
     match element.element {
         Element::Expression(expression) => match expression.get_kind() {
             ExpressionKind::Constant => {
@@ -220,6 +222,29 @@ pub fn traverse_element(
             ExpressionKind::DirectCall => {
                 let expr_dcall =
                     ExpressionDirectCall::from_interface(expression);
+                println!(
+                    "{:indent$}{}",
+                    "",
+                    expr_dcall.get_definition(),
+                    indent = context.indent * 4
+                );
+                let func_def = FunctionDefinition::from_interface(
+                    context
+                        .transaction
+                        .access::<FunctionDefinition>(
+                            &expr_dcall.get_definition(),
+                        )
+                        .unwrap(),
+                );
+                let func_name = func_def.get_mdl_name();
+                let semantic = func_def.get_semantic();
+                println!(
+                    "{:indent$}{:?}",
+                    "",
+                    semantic,
+                    indent = context.indent * 4
+                );
+
                 let arguments = expr_dcall.get_arguments();
                 for i in 0..arguments.get_size() {
                     let expr = arguments.get_expression(i).unwrap();
@@ -241,12 +266,22 @@ pub fn traverse_element(
                     ExpressionParameter::from_interface(expression);
                 let index = expr_param.get_index();
                 let name = material.get_parameter_name(index).unwrap();
-                println!("{} //< param", name);
+                println!(
+                    "{:indent$}{} //< param",
+                    "",
+                    name,
+                    indent = context.indent * 4
+                );
             }
             ExpressionKind::Temporary => {
                 let expr_temp = ExpressionTemporary::from_interface(expression);
                 let index = expr_temp.get_index();
-                println!("temporary_{}", index);
+                println!(
+                    "{:indent$}temporary_{}",
+                    "",
+                    index,
+                    indent = context.indent * 4
+                );
             }
             _ => (),
         },
@@ -300,6 +335,8 @@ pub fn traverse_element(
             );
         }
     }
+
+    context.indent -= 1;
 }
 
 fn configure(neuray: &Neuray, paths: &Vec<String>) -> Result<()> {
